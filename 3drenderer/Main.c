@@ -43,9 +43,11 @@ bool initialize_window(void) {
 }
 
 int main(int argc, char* args[]) {
+	printf("Program starting...\n");
 	is_running = initialize_window();
 
 	// TODO: begin the game/render loop
 
+	printf("finished.\n");
 	return 0;
 }
