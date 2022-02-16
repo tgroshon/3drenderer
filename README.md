@@ -6,9 +6,9 @@ Using [SDL2](https://libsdl.org/) to manually create a 3D rendering pipeline.
 
 ### Windows
 
-1. Download SDL2 release from libsdl.org website
-1. Unzip contents and place in `c:\SDL2`
+1. Unzip `SDL2_win.zip` contents and place at `c:\SDL2`
 1. Open project solution with Visual Studio
+1. Build
 
 ### Linux
 
