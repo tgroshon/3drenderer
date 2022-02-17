@@ -5,7 +5,7 @@ build_dir:
 	mkdir -p build
 
 run:
-	./renderer
+	./build/renderer
 
 clean:
 	rm -rf build/
