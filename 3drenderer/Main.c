@@ -7,6 +7,7 @@
 // Global statics;
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
+SDL_Texture *color_buffer_texture = NULL;
 bool is_running = false;
 uint32_t *color_buffer = NULL;
 
@@ -48,6 +49,14 @@ bool initialize_window(void) {
   return true;
 }
 
+void render_color_buffer() {
+  SDL_UpdateTexture(color_buffer_texture, // texture
+                    NULL,         // rectangle for getting subset of buffer
+                    color_buffer, // our color buffer
+                    (int)(WINDOW_WIDTH * sizeof(uint32_t))); // size of each row
+  SDL_RenderCopy(renderer, color_buffer_texture, NULL, NULL);
+}
+
 void setup() {
   // allocate memory of color buffer to fill one 32-bit number for every pixel
   // for window dimensions; returns NULL if malloc fails
@@ -59,6 +68,13 @@ void setup() {
     is_running = false;
     return;
   }
+
+  color_buffer_texture = SDL_CreateTexture(
+      renderer,                    // renderer
+      SDL_PIXELFORMAT_ARGB8888,    // Alpha-Red-Green-Blue 8-bits each
+      SDL_TEXTUREACCESS_STREAMING, // continuous updating because we update each
+                                   // frame
+      WINDOW_WIDTH, WINDOW_HEIGHT);
 }
 
 /**
@@ -96,9 +112,23 @@ void update() {
   // TODO: implement
 }
 
+/**
+ * @brief Sets every pixel of the color buffer to a new color
+ */
+void clear_color_buffer(uint32_t new_color) {
+  for (int row = 0; row < WINDOW_HEIGHT; row++) {
+    for (int column = 0; column < WINDOW_WIDTH; column++) {
+      color_buffer[(WINDOW_WIDTH * row) + column] = new_color;
+    }
+  }
+}
+
 void render() {
   SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
   SDL_RenderClear(renderer);
+
+  render_color_buffer();
+  clear_color_buffer(0xFFFFFF00);
 
   SDL_RenderPresent(renderer);
 }
