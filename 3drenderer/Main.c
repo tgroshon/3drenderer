@@ -11,9 +11,9 @@ SDL_Texture *color_buffer_texture = NULL;
 bool is_running = false;
 uint32_t *color_buffer = NULL;
 
-// TODO: make named constants with #define
-int WINDOW_WIDTH = 800;
-int WINDOW_HEIGHT = 600;
+// Default values with can be overidden by
+int window_width = 800;
+int window_height = 600;
 
 bool initialize_window(void) {
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -21,14 +21,21 @@ bool initialize_window(void) {
     return false;
   }
 
+  // query dimensions of full screen max width and height
+  // "fake fullscreen"
+  SDL_DisplayMode display_mode;
+  if (SDL_GetCurrentDisplayMode(0, &display_mode) >= 0) {
+    window_width = display_mode.w;
+    window_height = display_mode.h;
+  }
+
   // Create and set the global static window
   window = SDL_CreateWindow(NULL, // No title because going borderless
                             SDL_WINDOWPOS_CENTERED, // position x
                             SDL_WINDOWPOS_CENTERED, // position y
-                            WINDOW_WIDTH,           // width
-                            WINDOW_HEIGHT,          // height
-                            SDL_WINDOW_BORDERLESS   // additional flags
-  );
+                            window_width,           // width
+                            window_height,          // height
+                            SDL_WINDOW_BORDERLESS); // additional flags
 
   if (!window) {
     fprintf(stderr, "Error creating the SDL window.\n");
@@ -46,6 +53,9 @@ bool initialize_window(void) {
     return false;
   }
 
+  // "real fullscreen"
+  SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+
   return true;
 }
 
@@ -53,7 +63,7 @@ void render_color_buffer() {
   SDL_UpdateTexture(color_buffer_texture, // texture
                     NULL,         // rectangle for getting subset of buffer
                     color_buffer, // our color buffer
-                    (int)(WINDOW_WIDTH * sizeof(uint32_t))); // size of each row
+                    (int)(window_width * sizeof(uint32_t))); // size of each row
   SDL_RenderCopy(renderer, color_buffer_texture, NULL, NULL);
 }
 
@@ -61,7 +71,7 @@ void setup() {
   // allocate memory of color buffer to fill one 32-bit number for every pixel
   // for window dimensions; returns NULL if malloc fails
   color_buffer =
-      (uint32_t *)malloc(sizeof(uint32_t) * WINDOW_WIDTH * WINDOW_HEIGHT);
+      (uint32_t *)malloc(sizeof(uint32_t) * window_width * window_height);
 
   if (color_buffer == NULL) {
     fprintf(stderr, "Failed to initialize memory for color buffer.\n");
@@ -74,7 +84,7 @@ void setup() {
       SDL_PIXELFORMAT_ARGB8888,    // Alpha-Red-Green-Blue 8-bits each
       SDL_TEXTUREACCESS_STREAMING, // continuous updating because we update each
                                    // frame
-      WINDOW_WIDTH, WINDOW_HEIGHT);
+      window_width, window_height);
 }
 
 /**
@@ -116,9 +126,9 @@ void update() {
  * @brief Sets every pixel of the color buffer to a new color
  */
 void clear_color_buffer(uint32_t new_color) {
-  for (int row = 0; row < WINDOW_HEIGHT; row++) {
-    for (int column = 0; column < WINDOW_WIDTH; column++) {
-      color_buffer[(WINDOW_WIDTH * row) + column] = new_color;
+  for (int row = 0; row < window_height; row++) {
+    for (int column = 0; column < window_width; column++) {
+      color_buffer[(window_width * row) + column] = new_color;
     }
   }
 }
