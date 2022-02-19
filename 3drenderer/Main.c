@@ -135,7 +135,7 @@ void clear_color_buffer(uint32_t new_color) {
 
 /**
  * @brief Example drawing a grid across the screen
-*/
+ */
 void draw_grid() {
   for (int y = 0; y < window_height; y++) {
     for (int x = 0; x < window_width; x++) {
@@ -148,7 +148,7 @@ void draw_grid() {
 
 /**
  * @brief Example drawing a dotted grid across the screen
-*/
+ */
 void draw_dotted_grid() {
   for (int y = 0; y < window_height; y += 20) {
     for (int x = 0; x < window_width; x += 20) {
@@ -157,11 +157,24 @@ void draw_dotted_grid() {
   }
 }
 
+/**
+ * @brief Example of drawing a rectangle on the screen
+ */
+void draw_rect(int x, int y, int width, int height, uint32_t color) {
+  int starting_position = (window_width * y) + x;
+  for (int i = 0; i < height; i++) {
+    for (int j = 0; j < width; j++) {
+      color_buffer[starting_position + (window_width * j) + i] = color;
+    } 
+  }
+}
+
 void render() {
   SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
   SDL_RenderClear(renderer);
 
   draw_dotted_grid();
+  draw_rect(500, 500, 100, 200, 0xFFCDCDCD);
 
   render_color_buffer();
   clear_color_buffer(0xFF000000);
