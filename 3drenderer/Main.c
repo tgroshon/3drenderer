@@ -87,6 +87,14 @@ void setup() {
       window_width, window_height);
 }
 
+void safe_set_color_buffer(int address, uint32_t color) {
+  int max_address = window_width * window_height;
+  if (address > max_address) {
+    return;
+  }
+  color_buffer[address] = color;
+}
+
 /**
  * Tear-down everything we created
  * NOTE: kill in reverse order of initialization
@@ -128,7 +136,7 @@ void update() {
 void clear_color_buffer(uint32_t new_color) {
   for (int row = 0; row < window_height; row++) {
     for (int column = 0; column < window_width; column++) {
-      color_buffer[(window_width * row) + column] = new_color;
+      safe_set_color_buffer((window_width * row) + column, new_color);
     }
   }
 }
@@ -140,7 +148,7 @@ void draw_grid() {
   for (int y = 0; y < window_height; y++) {
     for (int x = 0; x < window_width; x++) {
       if (x % 20 == 0 || y % 20 == 0) {
-        color_buffer[(window_width * y) + x] = 0xFF333333;
+        safe_set_color_buffer((window_width * y) + x, 0xFF333333);
       }
     }
   }
@@ -152,7 +160,7 @@ void draw_grid() {
 void draw_dotted_grid() {
   for (int y = 0; y < window_height; y += 20) {
     for (int x = 0; x < window_width; x += 20) {
-      color_buffer[(window_width * y) + x] = 0xFF333333;
+      safe_set_color_buffer((window_width * y) + x, 0xFF333333);
     }
   }
 }
@@ -162,10 +170,10 @@ void draw_dotted_grid() {
  */
 void draw_rect(int x, int y, int width, int height, uint32_t color) {
   int starting_position = (window_width * y) + x;
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++) {
-      color_buffer[starting_position + (window_width * j) + i] = color;
-    } 
+  for (int w = 0; w < width; w++) {
+    for (int h = 0; h < height; h++) {
+      safe_set_color_buffer(starting_position + (window_width * h) + w, color);
+    }
   }
 }
 
@@ -174,7 +182,8 @@ void render() {
   SDL_RenderClear(renderer);
 
   draw_dotted_grid();
-  draw_rect(500, 500, 100, 200, 0xFFCDCDCD);
+  draw_rect(900, 500, 100, 200, 0xFFCD19F9);
+  draw_rect(400, 900, 500, 200, 0xFFDCF918);
 
   render_color_buffer();
   clear_color_buffer(0xFF000000);
