@@ -21,7 +21,7 @@ bool initialize_window(void) {
     return false;
   }
 
-  // Set the global static window
+  // Create and set the global static window
   window = SDL_CreateWindow(NULL, // No title because going borderless
                             SDL_WINDOWPOS_CENTERED, // position x
                             SDL_WINDOWPOS_CENTERED, // position y
