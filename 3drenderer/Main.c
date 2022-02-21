@@ -3,7 +3,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
+
 #include "display.h"
+#include "vector.h"
 
 bool is_running = false;
 
@@ -68,6 +70,9 @@ int main(int argc, char *args[]) {
   is_running = initialize_window();
 
   setup();
+
+  // Testing vectors
+  vec3_t myvector = {2.0, 3.0, 4.0};
 
   while (is_running) {
     process_input();
