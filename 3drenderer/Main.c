@@ -7,6 +7,9 @@
 #include "display.h"
 #include "vector.h"
 
+// Testing vectors with a Cube
+vec3_t cube_points[729];
+
 bool is_running = false;
 
 void setup() {
@@ -27,6 +30,18 @@ void setup() {
       SDL_TEXTUREACCESS_STREAMING, // continuous updating because we update each
                                    // frame
       window_width, window_height);
+
+  // Testing 3D vector point cloud.
+  int point_count = 0;
+  for (float x = -1; x <= 1; x += 0.25) {
+    for (float y = -1; y <= 1; y += 0.25) {
+      for (float z = -1; z <= 1; z += 0.25) {
+        vec3_t new_point = {.x = x, .y = y, .z = z};
+        cube_points[point_count] = new_point;
+        point_count++;
+      }
+    }
+  }
 }
 
 void process_input() {
