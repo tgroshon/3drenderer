@@ -16,7 +16,6 @@ extern int window_height;
 bool initialize_window(void);
 void destroy_window(void);
 void render_color_buffer(void);
-void safe_set_color_buffer(int address, uint32_t color);
 void clear_color_buffer(uint32_t new_color);
 void draw_pixel(int x, int y, uint32_t color);
 void draw_grid(void);

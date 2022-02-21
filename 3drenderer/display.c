@@ -77,14 +77,6 @@ void render_color_buffer() {
 }
 
 
-void safe_set_color_buffer(int address, uint32_t color) {
-  // int max_address = window_width * window_height;
-  // if (address > max_address) {
-  //   return;
-  // }
-  // color_buffer[address] = color;
-}
-
 /**
  * @brief Sets every pixel of the color buffer to a new color
  */
