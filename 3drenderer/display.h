@@ -18,6 +18,7 @@ void destroy_window(void);
 void render_color_buffer(void);
 void safe_set_color_buffer(int address, uint32_t color);
 void clear_color_buffer(uint32_t new_color);
+void draw_pixel(int x, int y, uint32_t color);
 void draw_grid(void);
 void draw_dotted_grid(void);
 void draw_rect(int x, int y, int width, int height, uint32_t color);

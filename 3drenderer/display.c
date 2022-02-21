@@ -78,21 +78,30 @@ void render_color_buffer() {
 
 
 void safe_set_color_buffer(int address, uint32_t color) {
-  int max_address = window_width * window_height;
-  if (address > max_address) {
-    return;
-  }
-  color_buffer[address] = color;
+  // int max_address = window_width * window_height;
+  // if (address > max_address) {
+  //   return;
+  // }
+  // color_buffer[address] = color;
 }
 
 /**
  * @brief Sets every pixel of the color buffer to a new color
  */
 void clear_color_buffer(uint32_t new_color) {
-  for (int row = 0; row < window_height; row++) {
-    for (int column = 0; column < window_width; column++) {
-      safe_set_color_buffer((window_width * row) + column, new_color);
+  for (int y = 0; y < window_height; y++) {
+    for (int x = 0; x < window_width; x++) {
+      draw_pixel(x, y, new_color);
     }
+  }
+}
+
+/**
+* @brief safely set a a pixel at coordinates (x, y) to color
+*/
+void draw_pixel(int x, int y, uint32_t color) {
+  if (x < window_width && y < window_height) {
+    color_buffer[(window_width * y) + x] = color;
   }
 }
 
@@ -103,7 +112,7 @@ void draw_grid() {
   for (int y = 0; y < window_height; y++) {
     for (int x = 0; x < window_width; x++) {
       if (x % 20 == 0 || y % 20 == 0) {
-        safe_set_color_buffer((window_width * y) + x, 0xFF333333);
+        draw_pixel(x, y, 0xFF333333);
       }
     }
   }
@@ -115,7 +124,7 @@ void draw_grid() {
 void draw_dotted_grid() {
   for (int y = 0; y < window_height; y += 20) {
     for (int x = 0; x < window_width; x += 20) {
-      safe_set_color_buffer((window_width * y) + x, 0xFF333333);
+      draw_pixel(x, y, 0xFF333333);
     }
   }
 }
@@ -124,10 +133,9 @@ void draw_dotted_grid() {
  * @brief Example of drawing a rectangle on the screen
  */
 void draw_rect(int x, int y, int width, int height, uint32_t color) {
-  int starting_position = (window_width * y) + x;
   for (int w = 0; w < width; w++) {
     for (int h = 0; h < height; h++) {
-      safe_set_color_buffer(starting_position + (window_width * h) + w, color);
+      draw_pixel(x + w, y + h, color);
     }
   }
 }
