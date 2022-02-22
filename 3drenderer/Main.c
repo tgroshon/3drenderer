@@ -16,6 +16,9 @@ float fov_factor = 640;
 
 vec3_t camera_position = {.x = 0, .y = 0, .z = -5};
 
+// TEST out a simple rotation animation
+vec3_t cube_rotation = {.x = 0, .y = 0, .z = 0};
+
 bool is_running = false;
 
 void setup() {
@@ -80,10 +83,8 @@ vec2_t perspective_project(vec3_t point) {
 /**
  * @brief Apply linear transformations: rotate, scale, translate
  */
-vec3_t transform_points(vec3_t point) {
-  // Apply camera translation; NOTE: only as Z position right now
-  point.z -= camera_position.z; 
-  return point;
+vec3_t transform_point(vec3_t point) {
+  return vec3_rotate_x(vec3_rotate_y(point, cube_rotation.y), cube_rotation.x);
 }
 
 /**
@@ -91,10 +92,16 @@ vec3_t transform_points(vec3_t point) {
  * and apply other transformations
  */
 void update() {
+  cube_rotation.x += 0.005;
+  cube_rotation.y += 0.015;
+
   for (int i = 0; i < 729; i++) {
     vec3_t point = cube_points[i];
 
-    vec3_t transformed_point = transform_points(point);
+    vec3_t transformed_point = transform_point(point);
+
+    // translate the points away from the camera
+    transformed_point.z -= camera_position.z; 
 
     vec2_t projected_point = perspective_project(transformed_point);
     projected_points[i] = projected_point;
