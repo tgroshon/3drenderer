@@ -92,7 +92,7 @@ void clear_color_buffer(uint32_t new_color) {
 * @brief safely set a a pixel at coordinates (x, y) to color
 */
 void draw_pixel(int x, int y, uint32_t color) {
-  if (x < window_width && y < window_height) {
+  if (x >= 0 && x < window_width && y >= 0 && y < window_height ) {
     color_buffer[(window_width * y) + x] = color;
   }
 }
