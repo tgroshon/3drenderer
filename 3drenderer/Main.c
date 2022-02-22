@@ -12,7 +12,9 @@ vec3_t cube_points[729];
 vec2_t projected_points[729];
 
 // magic number to scale 3D space
-float fov_factor = 128;
+float fov_factor = 640;
+
+vec3_t camera_position = {.x = 0, .y = 0, .z = -5};
 
 bool is_running = false;
 
@@ -65,30 +67,34 @@ void process_input() {
 }
 
 /**
- * @brief Convert 3D model space to 2D screen space.
- * @details orthographic projection to show thigns from the side ignoring Z
- * distance; applies FOV scaling
+ * @brief Convert 3D model space to perspective view of 2D screen space
+ * @details project to show thigns from the side adjusting for Z
+ * distance by implementing basic "perspective divide"; also applies FOV scaling
  */
-vec2_t orthographic_project(vec3_t point) {
-  vec2_t projected_point = {.x = point.x * fov_factor,
-                            .y = point.y * fov_factor};
+vec2_t perspective_project(vec3_t point) {
+  vec2_t projected_point = {.x = point.x * fov_factor / point.z,
+                            .y = point.y * fov_factor / point.z};
   return projected_point;
 }
 
 /**
- * @brief Update the model
+ * @brief Project the 3D model to 2D screenspace and translate by camera_position
  */
 void update() {
   for (int i = 0; i < 729; i++) {
     vec3_t point = cube_points[i];
-    vec2_t projected_point = orthographic_project(point);
+    point.z -= camera_position.z; // NOTE: camera only as Z position right now
+
+    vec2_t projected_point = perspective_project(point);
     projected_points[i] = projected_point;
   }
 }
 
 /**
  * @brief renders color buffer to the screen
- * @details before drawing projected points, translate to center
+ * @details before drawing projected points, translate to center cooridinate
+ * frame because that's how we decided to do our coordinates instead of from the
+ * top-left.
  */
 void render() {
   draw_dotted_grid();
