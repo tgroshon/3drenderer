@@ -78,20 +78,31 @@ vec2_t perspective_project(vec3_t point) {
 }
 
 /**
- * @brief Project the 3D model to 2D screenspace and translate by camera_position
+ * @brief Apply linear transformations: rotate, scale, translate
+ */
+vec3_t transform_points(vec3_t point) {
+  // Apply camera translation; NOTE: only as Z position right now
+  point.z -= camera_position.z; 
+  return point;
+}
+
+/**
+ * @brief Project the 3D model to 2D screenspace
+ * and apply other transformations
  */
 void update() {
   for (int i = 0; i < 729; i++) {
     vec3_t point = cube_points[i];
-    point.z -= camera_position.z; // NOTE: camera only as Z position right now
 
-    vec2_t projected_point = perspective_project(point);
+    vec3_t transformed_point = transform_points(point);
+
+    vec2_t projected_point = perspective_project(transformed_point);
     projected_points[i] = projected_point;
   }
 }
 
 /**
- * @brief renders color buffer to the screen
+ * @brief draws our projected poitns to the screen
  * @details before drawing projected points, translate to center cooridinate
  * frame because that's how we decided to do our coordinates instead of from the
  * top-left.
