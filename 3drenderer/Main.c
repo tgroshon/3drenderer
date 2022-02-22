@@ -11,6 +11,9 @@
 vec3_t cube_points[729];
 vec2_t projected_points[729];
 
+// magic number to scale 3D space
+float fov_factor = 128;
+
 bool is_running = false;
 
 void setup() {
@@ -67,7 +70,8 @@ void process_input() {
  * distance; applies FOV scaling
  */
 vec2_t orthographic_project(vec3_t point) {
-  vec2_t projected_point = {.x = point.x, .y = point.y};
+  vec2_t projected_point = {.x = point.x * fov_factor,
+                            .y = point.y * fov_factor};
   return projected_point;
 }
 
@@ -91,7 +95,8 @@ void render() {
 
   for (int i = 0; i < 729; i++) {
     vec2_t projected_point = projected_points[i];
-    draw_rect(projected_point.x, projected_point.y, 4, 4, 0xFFCD19F9);
+    draw_rect(projected_point.x + window_width / 2,
+              projected_point.y + window_height / 2, 4, 4, 0xFFCD19F9);
   }
 
   render_color_buffer();
