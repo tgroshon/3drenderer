@@ -86,7 +86,6 @@ vec2_t perspective_project(vec3_t point) {
 vec3_t transform_point(vec3_t point) {
   return vec3_rotate_x(vec3_rotate_y(point, cube_rotation.y), cube_rotation.x);
 }
-
 /**
  * @brief Project the 3D model to 2D screenspace
  * and apply other transformations
@@ -131,16 +130,11 @@ void render() {
 
 /**
 * @brief Game loop
-* 
-* @details Naive because it's tied to the processor clock. It will run as fast
-* as the processor lets it, which means animations will run at different
-* speeds on different computers.
-* 
-* @todo replace with "Fixed Game Loop"
 */
-void naive_game_loop() {
+void game_loop() {
   while (is_running) {
     process_input();
+    SDL_Delay(FRAME_TARGET_TIME);
     update();
     render();
   }
@@ -152,7 +146,7 @@ int main(int argc, char *args[]) {
 
   setup();
 
-  naive_game_loop();
+  game_loop();
 
   destroy_window();
 
