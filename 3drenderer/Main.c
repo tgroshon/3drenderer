@@ -5,12 +5,16 @@
 #include <stdio.h>
 
 #include "display.h"
+#include "mesh.h"
 #include "vector.h"
 
 bool is_running = false;
 float fov_factor = 640; // magic number to scale 3D space
 vec3_t camera_position = {.x = 0, .y = 0, .z = -5};
+vec3_t cube_rotation = {0, 0, 0};
 int previous_frame_time = 0;
+
+triangle_t triangles_to_render[N_MESH_FACES];
 
 void setup() {
   // allocate memory of color buffer to fill one 32-bit number for every pixel
@@ -59,12 +63,46 @@ vec2_t perspective_project(vec3_t point) {
   return projected_point;
 }
 
+void increment_cube_rotation() {
+  cube_rotation.x += 0.01;
+  cube_rotation.y += 0.01;
+  cube_rotation.z += 0.01;
+}
+
 /**
  * @brief Project the 3D model to 2D screenspace
  * and apply other transformations
  */
 void update() {
-  for (int i = 0; i < 729; i++) {
+  increment_cube_rotation();
+
+  for (int i = 0; i < N_MESH_FACES; i++) {
+    face_t mesh_face = mesh_faces[i];
+    vec3_t face_vertices[3];
+
+    face_vertices[0] = mesh_vertices[mesh_face.a - 1];
+    face_vertices[1] = mesh_vertices[mesh_face.b - 1];
+    face_vertices[2] = mesh_vertices[mesh_face.c - 1];
+
+    triangle_t projected_triangle;
+    for (int j = 0; j < 3; j++) {
+      vec3_t transformed_point = face_vertices[j];
+      transformed_point = vec3_rotate_x(transformed_point, cube_rotation.x);
+      transformed_point = vec3_rotate_y(transformed_point, cube_rotation.y);
+      transformed_point = vec3_rotate_z(transformed_point, cube_rotation.z);
+
+      // translate the vertex away from the camera Z
+      transformed_point.z -= camera_position.z;
+      
+      // project point and perspective divide
+      vec2_t projected_point = perspective_project(transformed_point);
+      projected_point.x += (window_width / 2);
+      projected_point.y += (window_height / 2);
+
+      projected_triangle.points[j] = projected_point;
+    }
+
+    triangles_to_render[i] = projected_triangle;
   }
 }
 
@@ -76,6 +114,13 @@ void update() {
  */
 void render() {
   draw_dotted_grid();
+
+  for (int i = 0; i < N_MESH_FACES; i++) {
+    triangle_t triangle = triangles_to_render[i];
+    draw_rect(triangle.points[0].x, triangle.points[0].y, 3, 3, 0xFF00FFFF);
+    draw_rect(triangle.points[1].x, triangle.points[1].y, 3, 3, 0xFF00FFFF);
+    draw_rect(triangle.points[2].x, triangle.points[2].y, 3, 3, 0xFF00FFFF);
+  }
 
   render_color_buffer();
   clear_color_buffer(0xFF000000);
@@ -90,7 +135,8 @@ void game_loop() {
   while (is_running) {
     process_input();
 
-    // Constant Delta-Time; good but if FPS is set to higher, animations will execute quicker
+    // Constant Delta-Time; good but if FPS is set to higher, animations will
+    // execute quicker
     // TODO: implement "variable delta-time"
     int time_to_wait =
         FRAME_TARGET_TIME - (SDL_GetTicks() - previous_frame_time);
