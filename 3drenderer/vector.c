@@ -1,5 +1,5 @@
-#include <math.h>
 #include "vector.h"
+#include <math.h>
 
 vec3_t vec3_rotate_x(vec3_t v, float angle) {
   vec3_t rotate_vector = {.x = v.x,

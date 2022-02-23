@@ -1,8 +1,8 @@
 #pragma once
 
-#include <stdint.h>
-#include <stdbool.h>
 #include <SDL2/SDL.h>
+#include <stdbool.h>
+#include <stdint.h>
 
 #define FPS 60
 #define FRAME_TARGET_TIME (1000 / FPS)
@@ -14,7 +14,6 @@ extern SDL_Texture *color_buffer_texture;
 extern uint32_t *color_buffer;
 extern int window_width;
 extern int window_height;
-
 
 bool initialize_window(void);
 void destroy_window(void);

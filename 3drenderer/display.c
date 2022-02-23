@@ -76,7 +76,6 @@ void render_color_buffer() {
   SDL_RenderCopy(renderer, color_buffer_texture, NULL, NULL);
 }
 
-
 /**
  * @brief Sets every pixel of the color buffer to a new color
  */
@@ -89,10 +88,10 @@ void clear_color_buffer(uint32_t new_color) {
 }
 
 /**
-* @brief safely set a a pixel at coordinates (x, y) to color
-*/
+ * @brief safely set a a pixel at coordinates (x, y) to color
+ */
 void draw_pixel(int x, int y, uint32_t color) {
-  if (x >= 0 && x < window_width && y >= 0 && y < window_height ) {
+  if (x >= 0 && x < window_width && y >= 0 && y < window_height) {
     color_buffer[(window_width * y) + x] = color;
   }
 }

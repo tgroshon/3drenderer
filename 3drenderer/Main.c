@@ -100,7 +100,7 @@ void update() {
     vec3_t transformed_point = transform_point(point);
 
     // translate the points away from the camera
-    transformed_point.z -= camera_position.z; 
+    transformed_point.z -= camera_position.z;
 
     vec2_t projected_point = perspective_project(transformed_point);
     projected_points[i] = projected_point;
@@ -129,8 +129,8 @@ void render() {
 }
 
 /**
-* @brief Game loop
-*/
+ * @brief Game loop
+ */
 void game_loop() {
   while (is_running) {
     process_input();
