@@ -7,20 +7,9 @@
 #include "display.h"
 #include "vector.h"
 
-// Testing vectors with a Cube
-vec3_t cube_points[729];
-vec2_t projected_points[729];
-
-// magic number to scale 3D space
-float fov_factor = 640;
-
-vec3_t camera_position = {.x = 0, .y = 0, .z = -5};
-
-// TEST out a simple rotation animation
-vec3_t cube_rotation = {.x = 0, .y = 0, .z = 0};
-
 bool is_running = false;
-
+float fov_factor = 640; // magic number to scale 3D space
+vec3_t camera_position = {.x = 0, .y = 0, .z = -5};
 int previous_frame_time = 0;
 
 void setup() {
@@ -41,18 +30,6 @@ void setup() {
       SDL_TEXTUREACCESS_STREAMING, // continuous updating because we update each
                                    // frame
       window_width, window_height);
-
-  // Testing 3D vector point cloud.
-  int point_count = 0;
-  for (float x = -1; x <= 1; x += 0.25) {
-    for (float y = -1; y <= 1; y += 0.25) {
-      for (float z = -1; z <= 1; z += 0.25) {
-        vec3_t new_point = {.x = x, .y = y, .z = z};
-        cube_points[point_count] = new_point;
-        point_count++;
-      }
-    }
-  }
 }
 
 void process_input() {
@@ -83,29 +60,11 @@ vec2_t perspective_project(vec3_t point) {
 }
 
 /**
- * @brief Apply linear transformations: rotate, scale, translate
- */
-vec3_t transform_point(vec3_t point) {
-  return vec3_rotate_x(vec3_rotate_y(point, cube_rotation.y), cube_rotation.x);
-}
-/**
  * @brief Project the 3D model to 2D screenspace
  * and apply other transformations
  */
 void update() {
-  cube_rotation.x += 0.01;
-  cube_rotation.y += 0.01;
-
   for (int i = 0; i < 729; i++) {
-    vec3_t point = cube_points[i];
-
-    vec3_t transformed_point = transform_point(point);
-
-    // translate the points away from the camera
-    transformed_point.z -= camera_position.z;
-
-    vec2_t projected_point = perspective_project(transformed_point);
-    projected_points[i] = projected_point;
   }
 }
 
@@ -117,12 +76,6 @@ void update() {
  */
 void render() {
   draw_dotted_grid();
-
-  for (int i = 0; i < 729; i++) {
-    vec2_t projected_point = projected_points[i];
-    draw_rect(projected_point.x + window_width / 2,
-              projected_point.y + window_height / 2, 4, 4, 0xFFCD19F9);
-  }
 
   render_color_buffer();
   clear_color_buffer(0xFF000000);
