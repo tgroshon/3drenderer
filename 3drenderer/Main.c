@@ -129,20 +129,30 @@ void render() {
   SDL_RenderPresent(renderer);
 }
 
+/**
+* @brief Game loop
+* 
+* @details Naive because it's tied to the processor clock. It will run as fast
+* as the processor lets it, which means animations will run at different
+* speeds on different computers.
+* 
+* @todo replace with "Fixed Game Loop"
+*/
+void naive_game_loop() {
+  while (is_running) {
+    process_input();
+    update();
+    render();
+  }
+}
+
 int main(int argc, char *args[]) {
   printf("Program starting...\n");
   is_running = initialize_window();
 
   setup();
 
-  // Testing vectors
-  vec3_t myvector = {2.0, 3.0, 4.0};
-
-  while (is_running) {
-    process_input();
-    update();
-    render();
-  }
+  naive_game_loop();
 
   destroy_window();
 
