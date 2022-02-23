@@ -21,6 +21,8 @@ vec3_t cube_rotation = {.x = 0, .y = 0, .z = 0};
 
 bool is_running = false;
 
+int previous_frame_time = 0;
+
 void setup() {
   // allocate memory of color buffer to fill one 32-bit number for every pixel
   // for window dimensions; returns NULL if malloc fails
@@ -134,7 +136,16 @@ void render() {
 void game_loop() {
   while (is_running) {
     process_input();
-    SDL_Delay(FRAME_TARGET_TIME);
+
+    // Constant Delta-Time; good but if FPS is set to higher, animations will execute quicker
+    // TODO: implement "variable delta-time"
+    int time_to_wait =
+        FRAME_TARGET_TIME - (SDL_GetTicks() - previous_frame_time);
+    if (time_to_wait > 0 && time_to_wait <= FRAME_TARGET_TIME) {
+      SDL_Delay(FRAME_TARGET_TIME);
+    }
+    previous_frame_time = SDL_GetTicks();
+
     update();
     render();
   }
