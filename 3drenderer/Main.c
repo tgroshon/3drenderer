@@ -19,8 +19,7 @@ triangle_t triangles_to_render[N_MESH_FACES];
 void setup() {
   // allocate memory of color buffer to fill one 32-bit number for every pixel
   // for window dimensions; returns NULL if malloc fails
-  color_buffer =
-      (uint32_t *)malloc(sizeof(uint32_t) * window_width * window_height);
+  color_buffer = (uint32_t *)malloc(sizeof(uint32_t) * window_width * window_height);
 
   if (color_buffer == NULL) {
     fprintf(stderr, "Failed to initialize memory for color buffer.\n");
@@ -28,12 +27,12 @@ void setup() {
     return;
   }
 
-  color_buffer_texture = SDL_CreateTexture(
-      renderer,                    // renderer
-      SDL_PIXELFORMAT_ARGB8888,    // Alpha-Red-Green-Blue 8-bits each
-      SDL_TEXTUREACCESS_STREAMING, // continuous updating because we update each
-                                   // frame
-      window_width, window_height);
+  color_buffer_texture =
+      SDL_CreateTexture(renderer,                    // renderer
+                        SDL_PIXELFORMAT_ARGB8888,    // Alpha-Red-Green-Blue 8-bits each
+                        SDL_TEXTUREACCESS_STREAMING, // continuous updating because we
+                                                     // update each frame
+                        window_width, window_height);
 }
 
 void process_input() {
@@ -93,7 +92,7 @@ void update() {
 
       // translate the vertex away from the camera Z
       transformed_point.z -= camera_position.z;
-      
+
       // project point and perspective divide
       vec2_t projected_point = perspective_project(transformed_point);
       projected_point.x += (window_width / 2);
@@ -116,10 +115,16 @@ void render() {
   draw_dotted_grid();
 
   for (int i = 0; i < N_MESH_FACES; i++) {
-    triangle_t triangle = triangles_to_render[i];
-    draw_rect(triangle.points[0].x, triangle.points[0].y, 3, 3, 0xFF00FFFF);
-    draw_rect(triangle.points[1].x, triangle.points[1].y, 3, 3, 0xFF00FFFF);
-    draw_rect(triangle.points[2].x, triangle.points[2].y, 3, 3, 0xFF00FFFF);
+    triangle_t tri = triangles_to_render[i];
+
+    // draw vertex points
+    draw_rect(tri.points[0].x, tri.points[0].y, 3, 3, 0xFF00FFFF);
+    draw_rect(tri.points[1].x, tri.points[1].y, 3, 3, 0xFF00FFFF);
+    draw_rect(tri.points[2].x, tri.points[2].y, 3, 3, 0xFF00FFFF);
+
+    // draw wireframe triangle faces
+    draw_triangle(tri.points[0].x, tri.points[0].y, tri.points[1].x, tri.points[1].y,
+                  tri.points[2].x, tri.points[2].y, 0xFF00FFFF);
   }
 
   render_color_buffer();
@@ -138,8 +143,7 @@ void game_loop() {
     // Constant Delta-Time; good but if FPS is set to higher, animations will
     // execute quicker
     // TODO: implement "variable delta-time"
-    int time_to_wait =
-        FRAME_TARGET_TIME - (SDL_GetTicks() - previous_frame_time);
+    int time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - previous_frame_time);
     if (time_to_wait > 0 && time_to_wait <= FRAME_TARGET_TIME) {
       SDL_Delay(FRAME_TARGET_TIME);
     }

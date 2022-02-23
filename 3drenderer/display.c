@@ -24,7 +24,7 @@ bool initialize_window(void) {
   }
 
   // Create and set the global static window
-  window = SDL_CreateWindow(NULL, // No title because going borderless
+  window = SDL_CreateWindow(NULL,                   // No title because going borderless
                             SDL_WINDOWPOS_CENTERED, // position x
                             SDL_WINDOWPOS_CENTERED, // position y
                             window_width,           // width
@@ -36,10 +36,9 @@ bool initialize_window(void) {
     return false;
   }
 
-  renderer = SDL_CreateRenderer(
-      window, // window object
-      -1,     // display device code; -1 for default visual device
-      0       // additional flags
+  renderer = SDL_CreateRenderer(window, // window object
+                                -1, // display device code; -1 for default visual device
+                                0   // additional flags
   );
 
   if (!renderer) {
@@ -70,8 +69,8 @@ void destroy_window(void) {
 
 void render_color_buffer() {
   SDL_UpdateTexture(color_buffer_texture, // texture
-                    NULL,         // rectangle for getting subset of buffer
-                    color_buffer, // our color buffer
+                    NULL,                 // rectangle for getting subset of buffer
+                    color_buffer,         // our color buffer
                     (int)(window_width * sizeof(uint32_t))); // size of each row
   SDL_RenderCopy(renderer, color_buffer_texture, NULL, NULL);
 }
@@ -129,4 +128,38 @@ void draw_rect(int x, int y, int width, int height, uint32_t color) {
       draw_pixel(x + w, y + h, color);
     }
   }
+}
+
+/**
+ * @brief Rasterize a line between two points
+ *
+ * @details implements a basic DDA line rasterization algorithm
+ */
+void draw_line(int x0, int y0, int x1, int y1, uint32_t color) {
+  int delta_x = (x1 - x0);
+  int delta_y = (y1 - y0);
+
+  // use the largest largest delta length
+  int side_length = abs(delta_x) >= abs(delta_y) ? abs(delta_x) : abs(delta_y);
+
+  // Find how much we should increment in both x and y each step
+  // casting to float so that we don't throw away the decimal.
+  // Using float division is the reason DDA is slower than bresenham
+  float x_inc = delta_x / (float)side_length;
+  float y_inc = delta_y / (float)side_length;
+
+  float current_x = x0;
+  float current_y = y0;
+
+  for (int i = 0; i < side_length; i++) {
+    draw_pixel(round(current_x), round(current_y), color);
+    current_x += x_inc;
+    current_y += y_inc;
+  }
+}
+
+void draw_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint32_t color) {
+  draw_line(x0, y0, x1, y1, color);
+  draw_line(x1, y1, x2, y2, color);
+  draw_line(x2, y2, x0, y0, color);
 }
