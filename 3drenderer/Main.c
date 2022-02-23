@@ -91,8 +91,8 @@ vec3_t transform_point(vec3_t point) {
  * and apply other transformations
  */
 void update() {
-  cube_rotation.x += 0.005;
-  cube_rotation.y += 0.015;
+  cube_rotation.x += 0.01;
+  cube_rotation.y += 0.01;
 
   for (int i = 0; i < 729; i++) {
     vec3_t point = cube_points[i];
