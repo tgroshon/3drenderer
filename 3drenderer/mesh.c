@@ -21,7 +21,7 @@ vec3_t cube_vertices[N_CUBE_VERTICES] = {
 face_t cube_faces[N_CUBE_FACES] = {
     // front
     {.a = 1, .b = 2, .c = 3},
-    {.a = 1, .b = 3, .c = 5},
+    {.a = 1, .b = 3, .c = 4},
     // right
     {.a = 4, .b = 3, .c = 5},
     {.a = 4, .b = 5, .c = 6},
