@@ -1,7 +1,7 @@
 #include "mesh.h"
 
-// extern mesh_vertices from header
-vec3_t mesh_vertices[N_MESH_VERTICES] = {
+// extern cube_vertices from header
+vec3_t cube_vertices[N_CUBE_VERTICES] = {
     {.x = -1, .y = -1, .z = -1}, // 1
     {.x = -1, .y = 1, .z = -1},  // 2
     {.x = 1, .y = 1, .z = -1},   // 3
@@ -12,8 +12,8 @@ vec3_t mesh_vertices[N_MESH_VERTICES] = {
     {.x = -1, .y = -1, .z = 1}   // 8
 };
 
-// extern mesh_faces from header
-face_t mesh_faces[N_MESH_FACES] = {
+// extern cube_faces from header
+face_t cube_faces[N_CUBE_FACES] = {
     // front
     {.a = 1, .b = 2, .c = 3},
     {.a = 1, .b = 3, .c = 5},
