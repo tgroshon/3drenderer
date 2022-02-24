@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "array.h"
 #include "display.h"
 #include "mesh.h"
 #include "vector.h"
@@ -14,7 +15,10 @@ vec3_t camera_position = {.x = 0, .y = 0, .z = -5};
 vec3_t cube_rotation = {0, 0, 0};
 int previous_frame_time = 0;
 
-triangle_t triangles_to_render[N_MESH_FACES];
+/// <summary>
+/// Array of triangles for mesh
+/// </summary>
+triangle_t* triangles_to_render = NULL;
 
 void setup() {
   // allocate memory of color buffer to fill one 32-bit number for every pixel
@@ -73,6 +77,9 @@ void increment_cube_rotation() {
  * and apply other transformations
  */
 void update() {
+  // re-initialize array of triangles 
+  triangles_to_render = NULL;
+
   increment_cube_rotation();
 
   for (int i = 0; i < N_MESH_FACES; i++) {
@@ -101,12 +108,15 @@ void update() {
       projected_triangle.points[j] = projected_point;
     }
 
-    triangles_to_render[i] = projected_triangle;
+    // FIXME: dynamically allocating memory inside the game loop isn't great;
+    // fix later.
+    array_push(triangles_to_render, projected_triangle);
   }
 }
 
 /**
  * @brief draws our projected poitns to the screen
+ * 
  * @details before drawing projected points, translate to center cooridinate
  * frame because that's how we decided to do our coordinates instead of from the
  * top-left.
@@ -114,7 +124,9 @@ void update() {
 void render() {
   draw_dotted_grid();
 
-  for (int i = 0; i < N_MESH_FACES; i++) {
+  int triangle_count = array_length(triangles_to_render);
+
+  for (int i = 0; i < triangle_count; i++) {
     triangle_t tri = triangles_to_render[i];
 
     // draw vertex points
@@ -126,6 +138,8 @@ void render() {
     draw_triangle(tri.points[0].x, tri.points[0].y, tri.points[1].x, tri.points[1].y,
                   tri.points[2].x, tri.points[2].y, 0xFF00FFFF);
   }
+
+  array_free(triangles_to_render);
 
   render_color_buffer();
   clear_color_buffer(0xFF000000);
