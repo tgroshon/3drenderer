@@ -12,12 +12,9 @@
 bool is_running = false;
 float fov_factor = 640; // magic number to scale 3D space
 vec3_t camera_position = {.x = 0, .y = 0, .z = -5};
-vec3_t cube_rotation = {0, 0, 0};
 int previous_frame_time = 0;
 
-/// <summary>
 /// Array of triangles for mesh
-/// </summary>
 triangle_t* triangles_to_render = NULL;
 
 void setup() {
@@ -37,6 +34,8 @@ void setup() {
                         SDL_TEXTUREACCESS_STREAMING, // continuous updating because we
                                                      // update each frame
                         window_width, window_height);
+
+  load_cube_mesh_data();
 }
 
 void process_input() {
@@ -66,10 +65,10 @@ vec2_t perspective_project(vec3_t point) {
   return projected_point;
 }
 
-void increment_cube_rotation() {
-  cube_rotation.x += 0.01;
-  cube_rotation.y += 0.01;
-  cube_rotation.z += 0.01;
+void increment_mesh_rotation() {
+  mesh.rotation.x += 0.01;
+  mesh.rotation.y += 0.01;
+  mesh.rotation.z += 0.01;
 }
 
 /**
@@ -80,22 +79,24 @@ void update() {
   // re-initialize array of triangles 
   triangles_to_render = NULL;
 
-  increment_cube_rotation();
+  increment_mesh_rotation();
 
-  for (int i = 0; i < N_CUBE_FACES; i++) {
-    face_t mesh_face = cube_faces[i];
+  int num_faces = array_length(mesh.faces);
+
+  for (int i = 0; i < num_faces; i++) {
+    face_t mesh_face = mesh.faces[i];
     vec3_t face_vertices[3];
 
-    face_vertices[0] = cube_vertices[mesh_face.a - 1];
-    face_vertices[1] = cube_vertices[mesh_face.b - 1];
-    face_vertices[2] = cube_vertices[mesh_face.c - 1];
+    face_vertices[0] = mesh.vertices[mesh_face.a - 1];
+    face_vertices[1] = mesh.vertices[mesh_face.b - 1];
+    face_vertices[2] = mesh.vertices[mesh_face.c - 1];
 
     triangle_t projected_triangle;
     for (int j = 0; j < 3; j++) {
       vec3_t transformed_point = face_vertices[j];
-      transformed_point = vec3_rotate_x(transformed_point, cube_rotation.x);
-      transformed_point = vec3_rotate_y(transformed_point, cube_rotation.y);
-      transformed_point = vec3_rotate_z(transformed_point, cube_rotation.z);
+      transformed_point = vec3_rotate_x(transformed_point, mesh.rotation.x);
+      transformed_point = vec3_rotate_y(transformed_point, mesh.rotation.y);
+      transformed_point = vec3_rotate_z(transformed_point, mesh.rotation.z);
 
       // translate the vertex away from the camera Z
       transformed_point.z -= camera_position.z;
@@ -168,6 +169,19 @@ void game_loop() {
   }
 }
 
+/**
+* @brief Free memory that was dynamically allocated
+*/
+void free_resources() {
+  // NOTE: avoid freeing a NULL pointer
+  if (color_buffer != NULL) {
+    free(color_buffer);
+  }
+
+  array_free(mesh.faces);
+  array_free(mesh.vertices);
+}
+
 int main(int argc, char *args[]) {
   printf("Program starting...\n");
   is_running = initialize_window();
@@ -177,6 +191,7 @@ int main(int argc, char *args[]) {
   game_loop();
 
   destroy_window();
+  free_resources();
 
   printf("finished.\n");
   return 0;

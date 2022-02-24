@@ -57,11 +57,6 @@ bool initialize_window(void) {
  * NOTE: kill in reverse order of initialization
  */
 void destroy_window(void) {
-  // NOTE: avoid freeing a NULL pointer
-  if (color_buffer != NULL) {
-    free(color_buffer);
-  }
-
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();

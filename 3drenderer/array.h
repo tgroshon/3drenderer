@@ -3,8 +3,8 @@
  * @file array.h
  * @brief Dynamic sizing array implementation
  *
- * @details Unlike C++ vector<>, the stretchy_buffer has the same
- * semantics as an object that you manually malloc and realloc.
+ * @details Unlike C++ vector<>, the dynamic (stretchy) array has 
+ * the same semantics as objects you manually malloc and realloc.
  * The pointer may relocate every time you add a new object
  * to it, so you:
  *
