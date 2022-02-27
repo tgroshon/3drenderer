@@ -95,12 +95,15 @@ void load_obj_file_data() {
 
       #ifdef _WIN32
       // clang-format off
-      sscanf_s(line, "f %d/%d/%d %d/%d/%d %d/%d/%d",
-        &vertex_indices[0],&texture_indices[0], &normal_indices[0],
-        &vertex_indices[1],&texture_indices[1], &normal_indices[1],
-        &vertex_indices[2],&texture_indices[2], &normal_indices[2]);
+        sscanf_s(line, "f %d/%d/%d %d/%d/%d %d/%d/%d",
+          &vertex_indices[0],&texture_indices[0], &normal_indices[0],
+          &vertex_indices[1],&texture_indices[1], &normal_indices[1],
+          &vertex_indices[2],&texture_indices[2], &normal_indices[2]);
       #else
-        sscanf(line, "v %f %f %f", &vertex.x, &vertex.y, &vertex.z);
+        sscanf(line, "f %d/%d/%d %d/%d/%d %d/%d/%d",
+          &vertex_indices[0],&texture_indices[0], &normal_indices[0],
+          &vertex_indices[1],&texture_indices[1], &normal_indices[1],
+          &vertex_indices[2],&texture_indices[2], &normal_indices[2]);
       #endif
       // clang-format on
 
