@@ -61,15 +61,14 @@ void process_input() {
  * distance by implementing basic "perspective divide"; also applies FOV scaling
  */
 vec2_t perspective_project(vec3_t point) {
-  vec2_t projected_point = {.x = point.x * fov_factor / point.z,
-                            .y = point.y * fov_factor / point.z};
+  vec2_t projected_point = {.x = point.x * fov_factor / -point.z,
+                            .y = point.y * fov_factor / -point.z};
   return projected_point;
 }
 
 void increment_mesh_rotation() {
-  mesh.rotation.x += 0.01;
-  mesh.rotation.y += 0.01;
-  mesh.rotation.z += 0.01;
+  mesh.rotation.x = 0; 
+  mesh.rotation.y += 0.02;
 }
 
 /**

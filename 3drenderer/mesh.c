@@ -69,7 +69,7 @@ void load_obj_file_data() {
   #endif
 
   if (file == 0) {
-      printf("Error while reading obj file");
+      printf("Error while reading obj file.\n");
       return;   
   }
 
@@ -77,9 +77,35 @@ void load_obj_file_data() {
   // TODO: max length of a single line; how true is this likely to be?
   char line[1024];
 
-  int i = 0;
-  while(fgets(line, 1024, file) && i < 50) {
-    printf("line=%s", line);
-    i++;
+  while(fgets(line, 1024, file)) {
+    if (strncmp(line, "v ", 2) == 0) {
+      vec3_t vertex;
+
+      #ifdef _WIN32
+        sscanf_s(line, "v %f %f %f", &vertex.x, &vertex.y, &vertex.z);
+      #else
+        sscanf(line, "v %f %f %f", &vertex.x, &vertex.y, &vertex.z);
+      #endif
+
+      array_push(mesh.vertices, vertex);
+    } else if (strncmp(line, "f ", 2) == 0) {
+      int vertex_indices[3];
+      int texture_indices[3];
+      int normal_indices[3];
+
+      #ifdef _WIN32
+      // clang-format off
+      sscanf_s(line, "f %d/%d/%d %d/%d/%d %d/%d/%d",
+        &vertex_indices[0],&texture_indices[0], &normal_indices[0],
+        &vertex_indices[1],&texture_indices[1], &normal_indices[1],
+        &vertex_indices[2],&texture_indices[2], &normal_indices[2]);
+      #else
+        sscanf(line, "v %f %f %f", &vertex.x, &vertex.y, &vertex.z);
+      #endif
+      // clang-format on
+
+      face_t face = {.a = vertex_indices[0], .b = vertex_indices[1], .c = vertex_indices[2]};
+      array_push(mesh.faces, face);
+    }
   }
 }
