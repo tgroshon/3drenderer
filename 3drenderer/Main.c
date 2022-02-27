@@ -11,7 +11,7 @@
 
 bool is_running = false;
 float fov_factor = 640; // magic number to scale 3D space
-vec3_t camera_position = {.x = 0, .y = 0, .z = -5};
+vec3_t camera_position = {.x = 0, .y = 0, .z = -3};
 int previous_frame_time = 0;
 
 /// Array of triangles for mesh
