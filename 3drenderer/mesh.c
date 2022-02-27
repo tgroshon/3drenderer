@@ -57,3 +57,29 @@ void load_cube_mesh_data() {
     array_push(mesh.faces, cube_face);
   }
 }
+
+void load_obj_file_data() {
+  FILE *file;
+
+
+  #ifdef _WIN32
+    fopen_s(&file, "..\\assets\\monkey_triangles.obj", "r");
+  #else
+    file = fopen("../assets/monkey_triangles.obj", "r");
+  #endif
+
+  if (file == 0) {
+      printf("Error while reading obj file");
+      return;   
+  }
+
+
+  // TODO: max length of a single line; how true is this likely to be?
+  char line[1024];
+
+  int i = 0;
+  while(fgets(line, 1024, file) && i < 50) {
+    printf("line=%s", line);
+    i++;
+  }
+}

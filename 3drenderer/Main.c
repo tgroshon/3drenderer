@@ -35,7 +35,8 @@ void setup() {
                                                      // update each frame
                         window_width, window_height);
 
-  load_cube_mesh_data();
+  // load_cube_mesh_data();
+  load_obj_file_data();
 }
 
 void process_input() {
