@@ -368,3 +368,5 @@ FodyWeavers.xsd
 # ignore make build directory
 build/
 
+# ignore dev specific compile commands json DB files: generate these per README.md directions
+compile_commands.json

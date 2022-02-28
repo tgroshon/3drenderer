@@ -24,3 +24,8 @@ Use make:
 make build
 make run
 ```
+
+### Generate compile_commands.json file
+
+1. Install [bear](https://github.com/rizsotto/Bear).
+2. Run: `bear make build`
