@@ -15,7 +15,7 @@ vec3_t camera_position = {.x = 0, .y = 0, .z = 0};
 int previous_frame_time = 0;
 
 /// Array of triangles for mesh
-triangle_t* triangles_to_render = NULL;
+triangle_t *triangles_to_render = NULL;
 
 void setup() {
   // allocate memory of color buffer to fill one 32-bit number for every pixel
@@ -67,18 +67,17 @@ vec2_t perspective_project(vec3_t point) {
 }
 
 void increment_mesh_rotation() {
-  // mesh.rotation.x = 0; 
+  // mesh.rotation.x = 0;
   mesh.rotation.y += 0.02;
-  // mesh.rotation.z = 0; 
+  // mesh.rotation.z = 0;
 }
-
 
 /**
  * @brief Project the 3D model to 2D screenspace
  * and apply other transformations
  */
 void update() {
-  // re-initialize array of triangles 
+  // re-initialize array of triangles
   triangles_to_render = NULL;
 
   increment_mesh_rotation();
@@ -138,7 +137,6 @@ void update() {
       continue;
     }
 
-
     // loop all three transformed vertices of the face and project them to screen space
     for (int j = 0; j < 3; j++) {
       // project point and perspective divide
@@ -157,7 +155,7 @@ void update() {
 
 /**
  * @brief draws our projected poitns to the screen
- * 
+ *
  * @details before drawing projected points, translate to center cooridinate
  * frame because that's how we decided to do our coordinates instead of from the
  * top-left.
@@ -210,8 +208,8 @@ void game_loop() {
 }
 
 /**
-* @brief Free memory that was dynamically allocated
-*/
+ * @brief Free memory that was dynamically allocated
+ */
 void free_resources() {
   // NOTE: avoid freeing a NULL pointer
   if (color_buffer != NULL) {
