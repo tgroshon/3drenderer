@@ -63,7 +63,7 @@ void load_obj_file_data() {
 
 
   #ifdef _WIN32
-    fopen_s(&file, "..\\assets\\monkey_triangles.obj", "r");
+    fopen_s(&file, "..\\assets\\cube.obj", "r");
   #else
     file = fopen("../assets/monkey_triangles.obj", "r");
   #endif

@@ -11,7 +11,7 @@
 
 bool is_running = false;
 float fov_factor = 640; // magic number to scale 3D space
-vec3_t camera_position = {.x = 0, .y = 0, .z = -3};
+vec3_t camera_position = {.x = 0, .y = 0, .z = 0};
 int previous_frame_time = 0;
 
 /// Array of triangles for mesh
@@ -35,7 +35,6 @@ void setup() {
                                                      // update each frame
                         window_width, window_height);
 
-  // load_cube_mesh_data();
   load_obj_file_data();
 }
 
@@ -61,15 +60,18 @@ void process_input() {
  * distance by implementing basic "perspective divide"; also applies FOV scaling
  */
 vec2_t perspective_project(vec3_t point) {
-  vec2_t projected_point = {.x = point.x * fov_factor / -point.z,
-                            .y = point.y * fov_factor / -point.z};
+  // NOTE: flipping Z because monkey obj is showing upside-down
+  vec2_t projected_point = {.x = (point.x * fov_factor) / point.z,
+                            .y = (point.y * fov_factor) / point.z};
   return projected_point;
 }
 
 void increment_mesh_rotation() {
-  mesh.rotation.x = 0; 
+  // mesh.rotation.x = 0; 
   mesh.rotation.y += 0.02;
+  // mesh.rotation.z = 0; 
 }
+
 
 /**
  * @brief Project the 3D model to 2D screenspace
@@ -85,24 +87,56 @@ void update() {
 
   for (int i = 0; i < num_faces; i++) {
     face_t mesh_face = mesh.faces[i];
-    vec3_t face_vertices[3];
 
+    vec3_t face_vertices[3];
     face_vertices[0] = mesh.vertices[mesh_face.a - 1];
     face_vertices[1] = mesh.vertices[mesh_face.b - 1];
     face_vertices[2] = mesh.vertices[mesh_face.c - 1];
 
     triangle_t projected_triangle;
+
+    vec3_t transformed_vertices[3];
+
+    // loop all three vertices of the face and apply transformations
     for (int j = 0; j < 3; j++) {
       vec3_t transformed_point = face_vertices[j];
       transformed_point = vec3_rotate_x(transformed_point, mesh.rotation.x);
       transformed_point = vec3_rotate_y(transformed_point, mesh.rotation.y);
       transformed_point = vec3_rotate_z(transformed_point, mesh.rotation.z);
 
-      // translate the vertex away from the camera Z
-      transformed_point.z -= camera_position.z;
+      // translate the vertex away from the camera Z by a static offset
+      transformed_point.z += 5;
 
+      transformed_vertices[j] = transformed_point;
+    }
+
+    /////////////////////////////////////////
+    // cull backfaces
+    /////////////////////////////////////////
+    vec3_t vector_a = transformed_vertices[0];
+    vec3_t vector_b = transformed_vertices[1];
+    vec3_t vector_c = transformed_vertices[2];
+    vec3_t vector_ab = vec3_sub(vector_b, vector_a);
+    vec3_t vector_ac = vec3_sub(vector_c, vector_a);
+
+    // Face normal is calculated by cross product of B-A and C-A
+    // NOTE: Cross product is not commutative; order matters; we go counter-clockwise
+    vec3_t normal = vec3_cross(vector_ab, vector_ac);
+
+    // Ray between a triangle point and the camera
+    vec3_t camera_ray = vec3_sub(camera_position, vector_a);
+
+    // If dot product between normal and cam is negative, the normal is facing away
+    // from the camera and should be culled
+    if (vec3_dot(normal, camera_ray) < 0) {
+      continue;
+    }
+
+
+    // loop all three transformed vertices of the face and project them to screen space
+    for (int j = 0; j < 3; j++) {
       // project point and perspective divide
-      vec2_t projected_point = perspective_project(transformed_point);
+      vec2_t projected_point = perspective_project(transformed_vertices[j]);
       projected_point.x += (window_width / 2);
       projected_point.y += (window_height / 2);
 

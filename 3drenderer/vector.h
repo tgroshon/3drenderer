@@ -44,6 +44,7 @@ vec2_t vec2_div(vec2_t v, float s);
  * Find dot product of two 2d vectors
  * 
  * @note The dot product of a and b gives the projection of b to a
+ * @note Commutative (order doesn't matter)
  * @note positive = perfectly aligned vectors; 0 = perpendicular vectors; negative = opposite aligned vectors
  */
 float vec2_dot(vec2_t a, vec2_t b);
@@ -83,7 +84,8 @@ vec3_t vec3_div(vec3_t v, float s);
  * Find cross product of two vectors
  * 
  * @note The cross product between two vectors gives a perpendicular vector; i.e. normal
- * @note Order matters; our system uses clock-wise vectors to denote positive normal
+ * @note Non-commutative (order matters); our system uses clock-wise vectors to denote positive normal
+ *       so choose the appropriate point by it's handedness.
  */
 vec3_t vec3_cross(vec3_t a, vec3_t b);
 
@@ -91,6 +93,7 @@ vec3_t vec3_cross(vec3_t a, vec3_t b);
  * Find dot product of two 3d vectors
  * 
  * @note The dot product of a and b gives the projection of b to a
+ * @note Commutative (order doesn't matter)
  * @note positive = perfectly aligned vectors; 0 = perpendicular vectors; negative = opposite aligned vectors
  */
 float vec3_dot(vec3_t a, vec3_t b);
