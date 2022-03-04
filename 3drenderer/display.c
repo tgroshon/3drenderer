@@ -158,3 +158,11 @@ void draw_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint32_t colo
   draw_line(x1, y1, x2, y2, color);
   draw_line(x2, y2, x0, y0, color);
 }
+
+void draw_flat_bottom(int x0, int y0, int x1, int y2, int mx, int my) {
+
+}
+
+void draw_flat_top(int x1, int y1, int mx, int my, int x2, int y2){
+
+}
