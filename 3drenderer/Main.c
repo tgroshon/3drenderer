@@ -118,12 +118,15 @@ void update() {
     vec3_t vector_c = transformed_vertices[2];
     vec3_t vector_ab = vec3_sub(vector_b, vector_a);
     vec3_t vector_ac = vec3_sub(vector_c, vector_a);
+    // When length (magnitude) of a vector is irrelevant, normalize it.
+    vec3_normalize(&vector_ab);
+    vec3_normalize(&vector_ac);
 
     // Face normal is calculated by cross product of B-A and C-A
     // NOTE: Cross product is not commutative; order matters; we go counter-clockwise
     vec3_t normal = vec3_cross(vector_ab, vector_ac);
 
-    // "Normalize your normals" (length of normal is irrelevant, only the direction)
+    // "Normalize your normals"
     vec3_normalize(&normal);
 
     // Ray between a triangle point and the camera
