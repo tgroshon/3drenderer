@@ -69,6 +69,13 @@ vec3_t vec3_cross(vec3_t a, vec3_t b) {
 
 float vec3_dot(vec3_t a, vec3_t b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
 
+void vec3_normalize(vec3_t *vec) {
+  float len = vec3_length(*vec);
+  vec->x /= len;
+  vec->y /= len;
+  vec->z /= len;
+}
+
 vec3_t vec3_rotate_x(vec3_t v, float angle) {
   vec3_t rotate_vector = {.x = v.x,
                           .y = v.y * cos(angle) - v.z * sin(angle),

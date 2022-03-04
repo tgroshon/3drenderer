@@ -123,6 +123,9 @@ void update() {
     // NOTE: Cross product is not commutative; order matters; we go counter-clockwise
     vec3_t normal = vec3_cross(vector_ab, vector_ac);
 
+    // "Normalize your normals" (length of normal is irrelevant, only the direction)
+    vec3_normalize(&normal);
+
     // Ray between a triangle point and the camera
     vec3_t camera_ray = vec3_sub(camera_position, vector_a);
 
