@@ -67,9 +67,9 @@ vec2_t perspective_project(vec3_t point) {
 }
 
 void increment_mesh_rotation() {
-  // mesh.rotation.x = 0;
-  mesh.rotation.y += 0.02;
-  // mesh.rotation.z = 0;
+  mesh.rotation.x += 0.01;
+  mesh.rotation.y += 0.01;
+  mesh.rotation.z += 0.01;
 }
 
 /**
@@ -165,22 +165,12 @@ void render() {
 
   int triangle_count = array_length(triangles_to_render);
 
-  // for (int i = 0; i < triangle_count; i++) {
-  //   triangle_t tri = triangles_to_render[i];
+  for (int i = 0; i < triangle_count; i++) {
+    triangle_t tri = triangles_to_render[i];
 
-  //   // draw vertex points
-  //   draw_rect(tri.points[0].x, tri.points[0].y, 3, 3, 0xFF00FFFF);
-  //   draw_rect(tri.points[1].x, tri.points[1].y, 3, 3, 0xFF00FFFF);
-  //   draw_rect(tri.points[2].x, tri.points[2].y, 3, 3, 0xFF00FFFF);
-
-  //   // draw wireframe triangle faces
-  //   draw_wireframe_triangle(tri.points[0].x, tri.points[0].y, tri.points[1].x, tri.points[1].y,
-  //                 tri.points[2].x, tri.points[2].y, 0xFF00FFFF);
-  // }
-
-  triangle_t tri = create_triangle(300, 100, 50, 400, 500, 700);
-  draw_wireframe_triangle(tri, 0xFF00FFFF);
-  draw_filled_triangle(tri, 0xFF0000FF);
+    draw_filled_triangle(tri, 0xFFFFFFFF);
+    draw_wireframe_triangle(tri, 0xFF000000);
+  }
 
   array_free(triangles_to_render);
 
