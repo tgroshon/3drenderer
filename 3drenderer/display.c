@@ -201,28 +201,52 @@ void fill_flat_top_triangle(int x0, int y0, int x1, int y1, int x2, int y2,
 
 void draw_filled_triangle(triangle_t raw_triangle, uint32_t color) {
   triangle_t tri = sort_tri_points_top_down(raw_triangle);
-  vec2_t midpoint = find_triangle_midpoint(tri);
 
-  fill_flat_bottom_triangle(
-    tri.points[0].x, 
-    tri.points[0].y,
-    tri.points[1].x, 
-    tri.points[1].y, 
-    midpoint.x,
-    midpoint.y, 
-    color
-  );
+  if (tri.points[1].y == tri.points[2].y) {
+    // tri is already a flat-bottom triangle
+    fill_flat_bottom_triangle(
+      tri.points[0].x, 
+      tri.points[0].y,
+      tri.points[1].x, 
+      tri.points[1].y, 
+      tri.points[2].x,
+      tri.points[2].y,
+      color
+    );
+  } else if (tri.points[0].y == tri.points[1].y) {
+    // tri is already a flat-top triangle
+    fill_flat_top_triangle(
+      tri.points[0].x, 
+      tri.points[0].y,
+      tri.points[1].x, 
+      tri.points[1].y, 
+      tri.points[2].x,
+      tri.points[2].y,
+      color
+    );
+  } else {
+    // tri must be split into two flat-surface triangles at a midpoint
+    vec2_t midpoint = find_triangle_midpoint(tri);
 
-  fill_flat_top_triangle(
-    tri.points[1].x,
-    tri.points[1].y,
-    midpoint.x,
-    midpoint.y, 
-    tri.points[2].x, 
-    tri.points[2].y, 
-    color
-  );
+    fill_flat_bottom_triangle(
+      tri.points[0].x, 
+      tri.points[0].y,
+      tri.points[1].x, 
+      tri.points[1].y, 
+      midpoint.x,
+      midpoint.y, 
+      color
+    );
 
+    fill_flat_top_triangle(
+      tri.points[1].x,
+      tri.points[1].y,
+      midpoint.x,
+      midpoint.y, 
+      tri.points[2].x, 
+      tri.points[2].y, 
+      color
+    );
+  }
   // clang-format on
-  return;
 }
