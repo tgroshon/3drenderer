@@ -20,23 +20,23 @@ vec3_t cube_vertices[N_CUBE_VERTICES] = {
 // extern cube_faces from header
 face_t cube_faces[N_CUBE_FACES] = {
     // front
-    {.a = 1, .b = 2, .c = 3},
-    {.a = 1, .b = 3, .c = 4},
+    {.a = 1, .b = 2, .c = 3, .color = 0xFFFF0000},
+    {.a = 1, .b = 3, .c = 4, .color = 0xFFFF0000},
     // right
-    {.a = 4, .b = 3, .c = 5},
-    {.a = 4, .b = 5, .c = 6},
+    {.a = 4, .b = 3, .c = 5, .color = 0xFF00FF00},
+    {.a = 4, .b = 5, .c = 6, .color = 0xFF00FF00},
     // back
-    {.a = 6, .b = 5, .c = 7},
-    {.a = 6, .b = 7, .c = 8},
+    {.a = 6, .b = 5, .c = 7, .color = 0xFFFFFF00},
+    {.a = 6, .b = 7, .c = 8, .color = 0xFFFFFF00},
     // left
-    {.a = 8, .b = 7, .c = 2},
-    {.a = 8, .b = 2, .c = 1},
+    {.a = 8, .b = 7, .c = 2, .color = 0xFFFF00FF},
+    {.a = 8, .b = 2, .c = 1, .color = 0xFFFF00FF},
     //  top
-    {.a = 2, .b = 7, .c = 5},
-    {.a = 2, .b = 5, .c = 3},
+    {.a = 2, .b = 7, .c = 5, .color = 0xFF00FFFF},
+    {.a = 2, .b = 5, .c = 3, .color = 0xFF00FFFF},
     //  bottom
-    {.a = 6, .b = 8, .c = 1},
-    {.a = 6, .b = 1, .c = 4},
+    {.a = 6, .b = 8, .c = 1, .color = 0xFFFFFFFF},
+    {.a = 6, .b = 1, .c = 4, .color = 0xFFFFFFFF},
 };
 
 // extern mesh from header
@@ -107,7 +107,7 @@ void load_obj_file_data() {
       #endif
       // clang-format on
 
-      face_t face = {.a = vertex_indices[0], .b = vertex_indices[1], .c = vertex_indices[2]};
+      face_t face = {.a = vertex_indices[0], .b = vertex_indices[1], .c = vertex_indices[2], .color = 0xFFCDCDCD};
       array_push(mesh.faces, face);
     }
   }

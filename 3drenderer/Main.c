@@ -47,7 +47,8 @@ void setup() {
                                                      // update each frame
                         window_width, window_height);
 
-  load_obj_file_data();
+  load_cube_mesh_data();
+  // load_obj_file_data();
 }
 
 void process_input() {
@@ -122,8 +123,6 @@ void update() {
     face_vertices[1] = mesh.vertices[mesh_face.b - 1];
     face_vertices[2] = mesh.vertices[mesh_face.c - 1];
 
-    triangle_t projected_triangle;
-
     vec3_t transformed_vertices[3];
 
     // loop all three vertices of the face and apply transformations
@@ -169,6 +168,9 @@ void update() {
       }
     }
 
+    triangle_t projected_triangle;
+    projected_triangle.color = mesh_face.color;
+
     // loop all three transformed vertices of the face and project them to screen space
     for (int j = 0; j < 3; j++) {
       // project point and perspective divide
@@ -202,7 +204,7 @@ void render() {
 
     if (render_method == RENDER_FILL_TRIANGLE ||
         render_method == RENDER_FILL_TRIANGLE_WIRE) {
-      draw_filled_triangle(tri, 0xFFCDCDCD);
+      draw_filled_triangle(tri, tri.color);
     }
     if (render_method == RENDER_FILL_TRIANGLE_WIRE || render_method == RENDER_WIRE || render_method == RENDER_WIRE_VERTEX) {
       draw_wireframe_triangle(tri, 0xFF444444);
