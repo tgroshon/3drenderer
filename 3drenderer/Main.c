@@ -62,10 +62,10 @@ void process_input() {
   case SDL_KEYDOWN:
     if (event.key.keysym.sym == SDLK_ESCAPE) {
       is_running = false;
-    } 
+    }
     if (event.key.keysym.sym == SDLK_1) {
       render_method = RENDER_WIRE_VERTEX;
-    } 
+    }
     if (event.key.keysym.sym == SDLK_2) {
       render_method = RENDER_WIRE;
     }
@@ -168,8 +168,15 @@ void update() {
       }
     }
 
+    // Calculate average depth for each face based on average z value after
+    // transformations
+    float avg_depth = (transformed_vertices[0].z + transformed_vertices[1].z +
+                       transformed_vertices[2].z) /
+                      3.0;
+
     triangle_t projected_triangle;
     projected_triangle.color = mesh_face.color;
+    projected_triangle.avg_depth = avg_depth;
 
     // loop all three transformed vertices of the face and project them to screen space
     for (int j = 0; j < 3; j++) {
@@ -184,6 +191,20 @@ void update() {
     // FIXME: dynamically allocating memory inside the game loop isn't great;
     // fix later.
     array_push(triangles_to_render, projected_triangle);
+  }
+
+  // Sort triangles_to_render by their avg_depth so that layering works correctly (Painter's Algorithm)
+  // FIXME: using a simple bubble sort; implement something better
+  // FIXME: using avg_depth is buggy and in some rotations shows incorrect layer; replace with a "z buffer"
+  int num_triangles = array_length(triangles_to_render);
+  for (int i = 0; i < num_triangles; i++) {
+    for (int j = i; j < num_triangles; j++) {
+      if (triangles_to_render[i].avg_depth < triangles_to_render[j].avg_depth) {
+        triangle_t temp = triangles_to_render[i];
+        triangles_to_render[i] = triangles_to_render[j];
+        triangles_to_render[j] = temp;
+      }
+    }
   }
 }
 
@@ -208,7 +229,8 @@ void render() {
         render_method == RENDER_FILL_TRIANGLE_WIRE) {
       draw_filled_triangle(tri, tri.color);
     }
-    if (render_method == RENDER_FILL_TRIANGLE_WIRE || render_method == RENDER_WIRE || render_method == RENDER_WIRE_VERTEX) {
+    if (render_method == RENDER_FILL_TRIANGLE_WIRE || render_method == RENDER_WIRE ||
+        render_method == RENDER_WIRE_VERTEX) {
       draw_wireframe_triangle(tri, 0xFF444444);
     }
     if (render_method == RENDER_WIRE_VERTEX) {

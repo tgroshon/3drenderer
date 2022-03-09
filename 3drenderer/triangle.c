@@ -2,9 +2,10 @@
 #include "triangle.h"
 #include "vector.h"
 
-triangle_t create_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint32_t color){
+triangle_t create_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint32_t color, float avg_depth){
   triangle_t tri;
   tri.color = color;
+  tri.avg_depth = avg_depth;
 
   vec2_t point_a = {.x = x0, .y = y0};
   vec2_t point_b = {.x = x1, .y = y1};
