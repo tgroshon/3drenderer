@@ -195,6 +195,8 @@ void update() {
  * top-left.
  */
 void render() {
+  SDL_RenderClear(renderer);
+
   draw_dotted_grid();
 
   int triangle_count = array_length(triangles_to_render);
