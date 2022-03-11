@@ -23,9 +23,11 @@ typedef struct {
 * Defines a struct for dynamically sized meshes containing vertices, faces, and rotation
 */
 typedef struct {
-  vec3_t *vertices; // dynamic array
-  face_t *faces;    // dynamic array
-  vec3_t rotation;  // euler angles with x, y, z denoting axis of rotation
+  vec3_t *vertices;   // dynamic array
+  face_t *faces;      // dynamic array
+  vec3_t rotation;    // euler angles with x, y, z denoting axis of rotation
+  vec3_t scale;       // scale with x, y, z
+  vec3_t translation; // translation with x, y, z
 } mesh_t;
 
 extern mesh_t mesh;

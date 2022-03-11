@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include "array.h"
 #include "mesh.h"
+#include "array.h"
+#include <stdio.h>
 
 #define N_CUBE_VERTICES 8
 #define N_CUBE_FACES (6 * 2) // 6 cube faces, 2 triangles per face
@@ -40,11 +40,11 @@ face_t cube_faces[N_CUBE_FACES] = {
 };
 
 // extern mesh from header
-mesh_t mesh = {
-  .vertices= NULL,
-  .faces = NULL, 
-  .rotation = {0, 0, 0}
-};
+mesh_t mesh = {.vertices = NULL,
+               .faces = NULL,
+               .rotation = {0, 0, 0},
+               .scale = {1.0, 1.0, 1.0},
+               .translation = {0, 0, 0}};
 
 void load_cube_mesh_data() {
   for (int i = 0; i < N_CUBE_VERTICES; i++) {
@@ -61,31 +61,29 @@ void load_cube_mesh_data() {
 void load_obj_file_data() {
   FILE *file;
 
-
-  #ifdef _WIN32
-    fopen_s(&file, "..\\assets\\cube.obj", "r");
-  #else
-    file = fopen("../assets/monkey_triangles.obj", "r");
-  #endif
+#ifdef _WIN32
+  fopen_s(&file, "..\\assets\\cube.obj", "r");
+#else
+  file = fopen("../assets/monkey_triangles.obj", "r");
+#endif
 
   if (file == 0) {
-      printf("Error while reading obj file.\n");
-      return;   
+    printf("Error while reading obj file.\n");
+    return;
   }
-
 
   // TODO: max length of a single line; how true is this likely to be?
   char line[1024];
 
-  while(fgets(line, 1024, file)) {
+  while (fgets(line, 1024, file)) {
     if (strncmp(line, "v ", 2) == 0) {
       vec3_t vertex;
 
-      #ifdef _WIN32
-        sscanf_s(line, "v %f %f %f", &vertex.x, &vertex.y, &vertex.z);
-      #else
-        sscanf(line, "v %f %f %f", &vertex.x, &vertex.y, &vertex.z);
-      #endif
+#ifdef _WIN32
+      sscanf_s(line, "v %f %f %f", &vertex.x, &vertex.y, &vertex.z);
+#else
+      sscanf(line, "v %f %f %f", &vertex.x, &vertex.y, &vertex.z);
+#endif
 
       array_push(mesh.vertices, vertex);
     } else if (strncmp(line, "f ", 2) == 0) {
@@ -93,7 +91,7 @@ void load_obj_file_data() {
       int texture_indices[3];
       int normal_indices[3];
 
-      #ifdef _WIN32
+#ifdef _WIN32
       // clang-format off
         sscanf_s(line, "f %d/%d/%d %d/%d/%d %d/%d/%d",
           &vertex_indices[0],&texture_indices[0], &normal_indices[0],
@@ -107,7 +105,10 @@ void load_obj_file_data() {
       #endif
       // clang-format on
 
-      face_t face = {.a = vertex_indices[0], .b = vertex_indices[1], .c = vertex_indices[2], .color = 0xFFCDCDCD};
+      face_t face = {.a = vertex_indices[0],
+                     .b = vertex_indices[1],
+                     .c = vertex_indices[2],
+                     .color = 0xFFCDCDCD};
       array_push(mesh.faces, face);
     }
   }

@@ -11,6 +11,13 @@ typedef struct {
   float z;
 } vec3_t;
 
+typedef struct {
+  float x;
+  float y;
+  float z;
+  float w;
+} vec4_t;
+
 /////////////////////////
 /// Vector 2D Functions
 /////////////////////////
@@ -120,3 +127,11 @@ vec3_t vec3_rotate_y(vec3_t v, float angle);
  * Rotate the vector about the Z axis by given angle
  */
 vec3_t vec3_rotate_z(vec3_t v, float angle);
+
+
+/////////////////////////
+/// Vector 4 Functions
+/////////////////////////
+
+vec4_t vec4_from_vec3(vec3_t v);
+vec3_t vec3_from_vec4(vec4_t v);

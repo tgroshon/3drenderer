@@ -8,6 +8,7 @@
 #include "display.h"
 #include "mesh.h"
 #include "vector.h"
+#include "matrix.h"
 
 enum cull_method { CULL_NONE, CULL_BACKFACE } cull_method;
 enum render_method {
@@ -97,12 +98,6 @@ vec2_t perspective_project(vec3_t point) {
   return projected_point;
 }
 
-void increment_mesh_rotation() {
-  mesh.rotation.x += 0.01;
-  mesh.rotation.y += 0.01;
-  mesh.rotation.z += 0.01;
-}
-
 /**
  * @brief Project the 3D model to 2D screenspace
  * and apply other transformations
@@ -111,10 +106,17 @@ void update() {
   // re-initialize array of triangles
   triangles_to_render = NULL;
 
-  increment_mesh_rotation();
+  mesh.rotation.x += 0.01;
+  mesh.rotation.y += 0.01;
+  mesh.rotation.z += 0.01;
+
+  // translate the mesh away from the camera Z by a static offset
+  mesh.translation.z = 5.0;
+
+  mat4_t scale_matrix = mat4_make_scale(mesh.scale.x, mesh.scale.y, mesh.scale.z);
+  mat4_t translation_matrix = mat4_make_translation(mesh.translation.x, mesh.translation.y, mesh.translation.z);
 
   int num_faces = array_length(mesh.faces);
-
   for (int i = 0; i < num_faces; i++) {
     face_t mesh_face = mesh.faces[i];
 
@@ -123,28 +125,29 @@ void update() {
     face_vertices[1] = mesh.vertices[mesh_face.b - 1];
     face_vertices[2] = mesh.vertices[mesh_face.c - 1];
 
-    vec3_t transformed_vertices[3];
+    vec4_t transformed_vertices[3];
 
     // loop all three vertices of the face and apply transformations
     for (int j = 0; j < 3; j++) {
-      vec3_t transformed_point = face_vertices[j];
-      transformed_point = vec3_rotate_x(transformed_point, mesh.rotation.x);
-      transformed_point = vec3_rotate_y(transformed_point, mesh.rotation.y);
-      transformed_point = vec3_rotate_z(transformed_point, mesh.rotation.z);
+      vec4_t transformed_vertex = vec4_from_vec3(face_vertices[j]);
 
-      // translate the vertex away from the camera Z by a static offset
-      transformed_point.z += 5;
+      // transformed_vertex = vec3_rotate_x(transformed_vertex, mesh.rotation.x);
+      // transformed_vertex = vec3_rotate_y(transformed_vertex, mesh.rotation.y);
+      // transformed_vertex = vec3_rotate_z(transformed_vertex, mesh.rotation.z);
 
-      transformed_vertices[j] = transformed_point;
+      transformed_vertex = mat4_mul_vec4(scale_matrix, transformed_vertex);
+      transformed_vertex = mat4_mul_vec4(translation_matrix, transformed_vertex);
+
+      transformed_vertices[j] = transformed_vertex;
     }
 
     if (cull_method == CULL_BACKFACE) {
       /////////////////////////////////////////
       // cull backfaces
       /////////////////////////////////////////
-      vec3_t vector_a = transformed_vertices[0];
-      vec3_t vector_b = transformed_vertices[1];
-      vec3_t vector_c = transformed_vertices[2];
+      vec3_t vector_a = vec3_from_vec4(transformed_vertices[0]);
+      vec3_t vector_b = vec3_from_vec4(transformed_vertices[1]);
+      vec3_t vector_c = vec3_from_vec4(transformed_vertices[2]);
       vec3_t vector_ab = vec3_sub(vector_b, vector_a);
       vec3_t vector_ac = vec3_sub(vector_c, vector_a);
       // When length (magnitude) of a vector is irrelevant, normalize it.
@@ -181,7 +184,7 @@ void update() {
     // loop all three transformed vertices of the face and project them to screen space
     for (int j = 0; j < 3; j++) {
       // project point and perspective divide
-      vec2_t projected_point = perspective_project(transformed_vertices[j]);
+      vec2_t projected_point = perspective_project(vec3_from_vec4(transformed_vertices[j]));
       projected_point.x += (window_width / 2);
       projected_point.y += (window_height / 2);
 
