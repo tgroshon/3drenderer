@@ -12,7 +12,7 @@ typedef struct {
 
 
 /**
-* @brief Return a 4x4 identity matrix
+* @brief Create a 4x4 identity matrix
 * 
 * @return 4x4 square identity matrix
 */
@@ -36,7 +36,7 @@ mat4_t mat4_identity(void);
 mat4_t mat4_make_scale(float sx, float sy, float sz);
 
 /**
-* @brief Return a 4x4 translation matrix
+* @brief Create a 4x4 translation matrix
 * 
 * @details Shaped thusly:
 * |  0  0  0 tx |
@@ -51,6 +51,54 @@ mat4_t mat4_make_scale(float sx, float sy, float sz);
 * @return translation transformation matrix
 */
 mat4_t mat4_make_translation(float tx, float ty, float tz);
+
+/**
+* @brief Create a 4x4 rotation matrix about Z axis
+* 
+* @details Shaped thusly:
+* |  c -s  0  0 |
+* |  s  c  0  0 |
+* |  0  0  0  0 |
+* |  0  0  0  1 |
+* 
+* @param angle Angle of rotation about Z axis
+* 
+* @return rotation transformation matrix
+*/
+mat4_t mat4_make_rotation_z(float angle);
+
+/**
+* @brief Create a 4x4 rotation matrix about X axis
+* 
+* @details Shaped thusly:
+* |  1  0  0  0 |
+* |  0  c -s  0 |
+* |  0  s  c  0 |
+* |  0  0  0  1 |
+* 
+* @param angle Angle of rotation about x axis
+* 
+* @return rotation transformation matrix
+*/
+mat4_t mat4_make_rotation_x(float angle);
+
+/**
+* @brief Create a 4x4 rotation matrix about Y axis
+* 
+* @details Shaped thusly:
+* |  c  0  s  0 |
+* |  0  1  0  0 |
+* | -s  0  c  0 |
+* |  0  0  0  1 |
+* 
+* @note: inverts the +/- of sin so that direction of rotation
+* is consistent with our coordinate system orientation (handedness)
+* 
+* @param angle Angle of rotation about Y axis
+* 
+* @return rotation transformation matrix
+*/
+mat4_t mat4_make_rotation_y(float angle);
 
 /**
 * @brief Multiply a 4x4 matrix by a 4x1 vector
