@@ -90,6 +90,11 @@ mat4_t mat4_make_rotation_all(float angle_x, float angle_y, float angle_z) {
 mat4_t mat4_make_world_matrix(mat4_t scale, mat4_t rotation, mat4_t translation) {
   mat4_t world = mat4_identity();
 
+  /// NOTE: Order matters! (a) matrix multiplcation is noncommutative and (b) applying 
+  /// transformations have different results in different orders. Always:
+  ///   1. Scale
+  ///   2. Rotate
+  ///   3. Translate
   world = mat4_mul_mat4(scale, world);
   world = mat4_mul_mat4(rotation, world);
   world = mat4_mul_mat4(translation, world);
