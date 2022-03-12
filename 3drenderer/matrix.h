@@ -100,6 +100,17 @@ mat4_t mat4_make_rotation_x(float angle);
 */
 mat4_t mat4_make_rotation_y(float angle);
 
+
+/**
+* @brief Create a combined 4x4 rotation matrix around all 3D axises
+*/
+mat4_t mat4_make_rotation_all(float angle_x, float angle_y, float angle_z);
+
+/**
+* @brief Create a 4x4 matrix that combines transformations into single world matrix
+*/
+mat4_t mat4_make_world_matrix(mat4_t scale, mat4_t rotation, mat4_t translation);
+
 /**
 * @brief Multiply a 4x4 matrix by a 4x1 vector
 * 
@@ -110,4 +121,12 @@ mat4_t mat4_make_rotation_y(float angle);
 */
 vec4_t mat4_mul_vec4(mat4_t m, vec4_t v);
 
-
+/**
+* @brief Multiply a 4x4 matrix by a 4x4 matrix
+* 
+* @param ma Mat4
+* @param mb Mat4
+* 
+* @return result Mat4
+*/
+mat4_t mat4_mul_mat4(mat4_t ma, mat4_t mb);
