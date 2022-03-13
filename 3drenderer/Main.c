@@ -56,8 +56,8 @@ void setup() {
   float zfar = 100.0;
   projection_matrix = mat4_make_perspective(field_of_view, aspect, znear, zfar);
 
-  load_cube_mesh_data();
-  // load_obj_file_data();
+  // load_cube_mesh_data();
+  load_obj_file_data();
 }
 
 void process_input() {
@@ -103,8 +103,8 @@ void update() {
   triangles_to_render = NULL;
 
   mesh.rotation.x += 0.01;
-  mesh.rotation.y += 0.01;
-  mesh.rotation.z += 0.01;
+  // mesh.rotation.y += 0.01;
+  // mesh.rotation.z += 0.01;
 
   // translate the mesh away from the camera Z by a static offset
   mesh.translation.z = 5.0;

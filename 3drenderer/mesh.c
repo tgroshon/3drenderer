@@ -62,7 +62,7 @@ void load_obj_file_data() {
   FILE *file;
 
 #ifdef _WIN32
-  fopen_s(&file, "..\\assets\\cube.obj", "r");
+  fopen_s(&file, "..\\assets\\f22.obj", "r");
 #else
   file = fopen("../assets/monkey_triangles.obj", "r");
 #endif
@@ -108,7 +108,7 @@ void load_obj_file_data() {
       face_t face = {.a = vertex_indices[0],
                      .b = vertex_indices[1],
                      .c = vertex_indices[2],
-                     .color = 0xFFCDCDCD};
+                     .color = 0xFFFFFFFF};
       array_push(mesh.faces, face);
     }
   }
