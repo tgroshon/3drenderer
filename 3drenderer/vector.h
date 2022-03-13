@@ -128,8 +128,12 @@ vec3_t vec3_rotate_y(vec3_t v, float angle);
  */
 vec3_t vec3_rotate_z(vec3_t v, float angle);
 
+/**
+ * Get unit normal for a triangle of Vec3s
+ */
+vec3_t vec3_normal(vec3_t a, vec3_t b, vec3_t c);
 
-/////////////////////////
+    /////////////////////////
 /// Vector 4 Functions
 /////////////////////////
 

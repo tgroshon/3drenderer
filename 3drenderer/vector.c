@@ -100,7 +100,23 @@ vec3_t vec3_rotate_z(vec3_t v, float angle) {
   return rotate_vector;
 }
 
+vec3_t vec3_normal(vec3_t a, vec3_t b, vec3_t c) {
+    vec3_t vector_ab = vec3_sub(b, a);
+    vec3_t vector_ac = vec3_sub(c, a);
 
+    // Length (magnitude) of these vectors is irrelevant, so normalize.
+    vec3_normalize(&vector_ab);
+    vec3_normalize(&vector_ac);
+
+    // Face normal is calculated by cross product of B-A and C-A
+    // NOTE: Cross product is not commutative; order matters; we go counter-clockwise
+    vec3_t normal = vec3_cross(vector_ab, vector_ac);
+
+    // "Normalize your normals"
+    vec3_normalize(&normal);
+
+    return normal;
+}
 
 vec4_t vec4_from_vec3(vec3_t v) {
   vec4_t res = {.x = v.x, .y = v.y, .z = v.z, .w = 1};

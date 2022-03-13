@@ -144,20 +144,11 @@ void update() {
       vec3_t vector_a = vec3_from_vec4(transformed_vertices[0]);
       vec3_t vector_b = vec3_from_vec4(transformed_vertices[1]);
       vec3_t vector_c = vec3_from_vec4(transformed_vertices[2]);
-      vec3_t vector_ab = vec3_sub(vector_b, vector_a);
-      vec3_t vector_ac = vec3_sub(vector_c, vector_a);
-      // When length (magnitude) of a vector is irrelevant, normalize it.
-      vec3_normalize(&vector_ab);
-      vec3_normalize(&vector_ac);
 
-      // Face normal is calculated by cross product of B-A and C-A
-      // NOTE: Cross product is not commutative; order matters; we go counter-clockwise
-      vec3_t normal = vec3_cross(vector_ab, vector_ac);
+      vec3_t normal = vec3_normal(vector_a, vector_b, vector_c);
 
-      // "Normalize your normals"
-      vec3_normalize(&normal);
-
-      // Ray between a triangle point and the camera
+      // Ray between camera and a point of the face (the ray is the same
+      // for all points of the face, so it doesn't matter which you pick)
       vec3_t camera_ray = vec3_sub(camera_position, vector_a);
 
       // If dot product between normal and cam is negative, the normal is facing away
