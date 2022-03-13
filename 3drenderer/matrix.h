@@ -119,11 +119,14 @@ mat4_t mat4_make_world_matrix(mat4_t scale, mat4_t rotation, mat4_t translation)
 * 
 * @note Holds an operation to store an unchanged Z-value in the Vec4 result's W position
 * so that perspective divide can happen in a separate step.
+* 
 */
 mat4_t mat4_make_perspective(float fov, float aspect, float znear, float zfar);
 
 /**
 * @brief Apply projection matrix to Vec4 and apply perspective divide
+* 
+* @returns Vec4 Normalized Device Coordinates (NDC) or "image space"
 */
 vec4_t mat4_mul_vec4_project(mat4_t projection_matrix, vec4_t v);
 
