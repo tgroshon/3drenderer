@@ -111,6 +111,22 @@ mat4_t mat4_make_rotation_all(float angle_x, float angle_y, float angle_z);
 */
 mat4_t mat4_make_world_matrix(mat4_t scale, mat4_t rotation, mat4_t translation);
 
+
+/**
+* @brief Create a 4x4 projection matrix
+* 
+* @details Normalizes all vectors to image space between -1 and 1;
+* 
+* @note Holds an operation to store an unchanged Z-value in the Vec4 result's W position
+* so that perspective divide can happen in a separate step.
+*/
+mat4_t mat4_make_perspective(float fov, float aspect, float znear, float zfar);
+
+/**
+* @brief Apply projection matrix to Vec4 and apply perspective divide
+*/
+vec4_t mat4_mul_vec4_project(mat4_t projection_matrix, vec4_t v);
+
 /**
 * @brief Multiply a 4x4 matrix by a 4x1 vector
 * 

@@ -6,9 +6,9 @@
 
 #include "array.h"
 #include "display.h"
+#include "matrix.h"
 #include "mesh.h"
 #include "vector.h"
-#include "matrix.h"
 
 enum cull_method { CULL_NONE, CULL_BACKFACE } cull_method;
 enum render_method {
@@ -19,9 +19,10 @@ enum render_method {
 } render_method;
 
 bool is_running = false;
-float fov_factor = 640; // magic number to scale 3D space
-vec3_t camera_position = {.x = 0, .y = 0, .z = 0};
 int previous_frame_time = 0;
+
+mat4_t projection_matrix;
+vec3_t camera_position = {.x = 0, .y = 0, .z = 0};
 
 /// Array of triangles for mesh
 triangle_t *triangles_to_render = NULL;
@@ -47,6 +48,12 @@ void setup() {
                         SDL_TEXTUREACCESS_STREAMING, // continuous updating because we
                                                      // update each frame
                         window_width, window_height);
+
+  float field_of_view = M_PI / 3.0; // 60deg converted to radians
+  float aspect = (float)window_height / (float)window_width;
+  float znear = 0.1;
+  float zfar = 100.0;
+  projection_matrix = mat4_make_perspective(field_of_view, aspect, znear, zfar);
 
   load_cube_mesh_data();
   // load_obj_file_data();
@@ -87,18 +94,6 @@ void process_input() {
 }
 
 /**
- * @brief Convert 3D model space to perspective view of 2D screen space
- * @details project to show thigns from the side adjusting for Z
- * distance by implementing basic "perspective divide"; also applies FOV scaling
- */
-vec2_t perspective_project(vec3_t point) {
-  // NOTE: flipping Z because monkey obj is showing upside-down
-  vec2_t projected_point = {.x = (point.x * fov_factor) / point.z,
-                            .y = (point.y * fov_factor) / point.z};
-  return projected_point;
-}
-
-/**
  * @brief Project the 3D model to 2D screenspace
  * and apply other transformations
  */
@@ -114,11 +109,13 @@ void update() {
   mesh.translation.z = 5.0;
 
   mat4_t scale_matrix = mat4_make_scale(mesh.scale.x, mesh.scale.y, mesh.scale.z);
-  mat4_t translation_matrix = mat4_make_translation(mesh.translation.x, mesh.translation.y, mesh.translation.z);
+  mat4_t translation_matrix =
+      mat4_make_translation(mesh.translation.x, mesh.translation.y, mesh.translation.z);
   mat4_t rotation_matrix =
       mat4_make_rotation_all(mesh.rotation.x, mesh.rotation.y, mesh.rotation.z);
 
-  mat4_t world_matrix = mat4_make_world_matrix(scale_matrix, rotation_matrix, translation_matrix);
+  mat4_t world_matrix =
+      mat4_make_world_matrix(scale_matrix, rotation_matrix, translation_matrix);
 
   int num_faces = array_length(mesh.faces);
   for (int i = 0; i < num_faces; i++) {
@@ -176,28 +173,39 @@ void update() {
                        transformed_vertices[2].z) /
                       3.0;
 
-    triangle_t projected_triangle;
-    projected_triangle.color = mesh_face.color;
-    projected_triangle.avg_depth = avg_depth;
+    vec4_t projected_points[3];
 
     // loop all three transformed vertices of the face and project them to screen space
     for (int j = 0; j < 3; j++) {
-      // project point and perspective divide
-      vec2_t projected_point = perspective_project(vec3_from_vec4(transformed_vertices[j]));
-      projected_point.x += (window_width / 2);
-      projected_point.y += (window_height / 2);
+      projected_points[j] =
+          mat4_mul_vec4_project(projection_matrix, transformed_vertices[j]);
 
-      projected_triangle.points[j] = projected_point;
+      // Scale into view
+      projected_points[j].x *= (window_width / 2.0);
+      projected_points[j].y *= (window_height / 2.0);
+
+      // Translate the points to the middle of the screen
+      projected_points[j].x += (window_width / 2.0);
+      projected_points[j].y += (window_height / 2.0);
     }
+
+    triangle_t projected_triangle = {
+        .color = mesh_face.color,
+        .avg_depth = avg_depth,
+        .points = {{projected_points[0].x, projected_points[0].y},
+                   {projected_points[1].x, projected_points[1].y},
+                   {projected_points[2].x, projected_points[2].y}}};
 
     // FIXME: dynamically allocating memory inside the game loop isn't great;
     // fix later.
     array_push(triangles_to_render, projected_triangle);
   }
 
-  // Sort triangles_to_render by their avg_depth so that layering works correctly (Painter's Algorithm)
+  // Sort triangles_to_render by their avg_depth so that layering works correctly
+  // (Painter's Algorithm)
   // FIXME: using a simple bubble sort; implement something better
-  // FIXME: using avg_depth is buggy and in some rotations shows incorrect layer; replace with a "z buffer"
+  // FIXME: using avg_depth is buggy and in some rotations shows incorrect layer; replace
+  // with a "z buffer"
   int num_triangles = array_length(triangles_to_render);
   for (int i = 0; i < num_triangles; i++) {
     for (int j = i; j < num_triangles; j++) {

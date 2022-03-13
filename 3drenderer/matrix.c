@@ -102,6 +102,29 @@ mat4_t mat4_make_world_matrix(mat4_t scale, mat4_t rotation, mat4_t translation)
   return world;
 }
 
+mat4_t mat4_make_perspective(float fov, float aspect, float znear, float zfar) {
+  mat4_t m = {{{0}}};
+  m.m[0][0] = aspect * (1 / tan(fov / 2)); // Normalize X's by Field of View & aspect ratio
+  m.m[1][1] = 1 / tan(fov / 2); // Normalize Y's by Field of View 
+  m.m[2][2] = zfar / (zfar - znear); // Normalize Z's by zfar and znear
+  m.m[2][3] = (-zfar * znear) / (zfar-znear);  // offset (translate) z's to the znear
+  m.m[3][2] = 1.0; // Store the original Z-value in W position so that perspective divide can occur later
+
+  return m;
+}
+
+vec4_t mat4_mul_vec4_project(mat4_t projection_matrix, vec4_t v) { 
+  vec4_t result = mat4_mul_vec4(projection_matrix, v);
+
+  // Guard to ensure our original Z-value was stored in the W position
+  if (result.w != 0.0) {
+    result.x /= result.w;
+    result.y /= result.w;
+    result.z /= result.w;
+  }
+  return result; 
+}
+
 vec4_t mat4_mul_vec4(mat4_t m, vec4_t v) {
   vec4_t result;
 
