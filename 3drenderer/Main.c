@@ -9,6 +9,7 @@
 #include "matrix.h"
 #include "mesh.h"
 #include "vector.h"
+#include "light.h"
 
 enum cull_method { CULL_NONE, CULL_BACKFACE } cull_method;
 enum render_method {
@@ -29,7 +30,7 @@ triangle_t *triangles_to_render = NULL;
 
 void setup() {
   // initialize render mode and triangle culling method
-  render_method = RENDER_WIRE;
+  render_method = RENDER_FILL_TRIANGLE_WIRE;
   cull_method = CULL_BACKFACE;
 
   // allocate memory of color buffer to fill one 32-bit number for every pixel
@@ -137,15 +138,17 @@ void update() {
       transformed_vertices[j] = transformed_vertex;
     }
 
+    // Calculate face normal for Backface Culling and Light Shading
+    vec3_t vector_a = vec3_from_vec4(transformed_vertices[0]);
+    vec3_t vector_b = vec3_from_vec4(transformed_vertices[1]);
+    vec3_t vector_c = vec3_from_vec4(transformed_vertices[2]);
+
+    vec3_t normal = vec3_normal(vector_a, vector_b, vector_c);
+
     if (cull_method == CULL_BACKFACE) {
       /////////////////////////////////////////
       // cull backfaces
       /////////////////////////////////////////
-      vec3_t vector_a = vec3_from_vec4(transformed_vertices[0]);
-      vec3_t vector_b = vec3_from_vec4(transformed_vertices[1]);
-      vec3_t vector_c = vec3_from_vec4(transformed_vertices[2]);
-
-      vec3_t normal = vec3_normal(vector_a, vector_b, vector_c);
 
       // Ray between camera and a point of the face (the ray is the same
       // for all points of the face, so it doesn't matter which you pick)
@@ -180,8 +183,12 @@ void update() {
       projected_points[j].y += (window_height / 2.0);
     }
 
+    // Flip sign of dot product because if face and light are pointing at eachother
+    // (opposite directions), we want the light intensity to be greater
+    float light_intensity_factor = vec3_dot(normal, global_light.direction) * -1;
+
     triangle_t projected_triangle = {
-        .color = mesh_face.color,
+        .color = light_apply_intensity(mesh_face.color, light_intensity_factor),
         .avg_depth = avg_depth,
         .points = {{projected_points[0].x, projected_points[0].y},
                    {projected_points[1].x, projected_points[1].y},
@@ -228,6 +235,7 @@ void render() {
 
     if (render_method == RENDER_FILL_TRIANGLE ||
         render_method == RENDER_FILL_TRIANGLE_WIRE) {
+      
       draw_filled_triangle(tri, tri.color);
     }
     if (render_method == RENDER_FILL_TRIANGLE_WIRE || render_method == RENDER_WIRE ||
