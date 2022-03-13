@@ -6,10 +6,10 @@
 
 #include "array.h"
 #include "display.h"
+#include "light.h"
 #include "matrix.h"
 #include "mesh.h"
 #include "vector.h"
-#include "light.h"
 
 enum cull_method { CULL_NONE, CULL_BACKFACE } cull_method;
 enum render_method {
@@ -102,8 +102,8 @@ void update() {
   // re-initialize array of triangles
   triangles_to_render = NULL;
 
-  mesh.rotation.x += 0.01;
-  // mesh.rotation.y += 0.01;
+  // mesh.rotation.x += 0.01;
+  mesh.rotation.y += 0.02;
   // mesh.rotation.z += 0.01;
 
   // translate the mesh away from the camera Z by a static offset
@@ -177,7 +177,7 @@ void update() {
       // Scale into view
       projected_points[j].x *= (window_width / 2.0);
       projected_points[j].y *= (window_height / 2.0);
-      
+
       // Invert the y values to account for flipped screen y coordinate:
       // i.e. screen space Y goes top to bottom, model space Y goes bottom to top
       projected_points[j].y *= -1;
@@ -239,7 +239,7 @@ void render() {
 
     if (render_method == RENDER_FILL_TRIANGLE ||
         render_method == RENDER_FILL_TRIANGLE_WIRE) {
-      
+
       draw_filled_triangle(tri, tri.color);
     }
     if (render_method == RENDER_FILL_TRIANGLE_WIRE || render_method == RENDER_WIRE ||
