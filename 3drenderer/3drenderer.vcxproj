@@ -151,6 +151,7 @@
     <ClCompile Include="mesh.c" />
     <ClCompile Include="triangle.c" />
     <ClCompile Include="vector.c" />
+    <ClCompile Include="texture.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="array.h" />
@@ -160,6 +161,7 @@
     <ClInclude Include="mesh.h" />
     <ClInclude Include="triangle.h" />
     <ClInclude Include="vector.h" />
+    <ClInclude Include="texture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
