@@ -1,7 +1,8 @@
 #pragma once
+
 #include <stdint.h>
 #include "vector.h"
-
+#include "texture.h"
 
 /**
  * Face represents the indexes of 3 points in a corresponding mesh point array.
@@ -13,9 +14,15 @@
  * @note each field is base 1 instead of base 0
  */
 typedef struct {
+  // indices of vertices in the mesh
   int a;
   int b;
   int c;
+  // UV coordinate mappings to the texture
+  tex2_t a_uv;
+  tex2_t b_uv;
+  tex2_t c_uv;
+  // Solid color if texture not used
   uint32_t color;
 } face_t;
 

@@ -10,13 +10,16 @@
 #include "matrix.h"
 #include "mesh.h"
 #include "vector.h"
+#include "triangle.h"
 
 enum cull_method { CULL_NONE, CULL_BACKFACE } cull_method;
 enum render_method {
   RENDER_WIRE,
   RENDER_WIRE_VERTEX,
   RENDER_FILL_TRIANGLE,
-  RENDER_FILL_TRIANGLE_WIRE
+  RENDER_FILL_TRIANGLE_WIRE,
+  RENDER_TEXTURED,
+  RENDER_TEXTURED_WIRE
 } render_method;
 
 bool is_running = false;
@@ -56,8 +59,10 @@ void setup() {
   float zfar = 100.0;
   projection_matrix = mat4_make_perspective(field_of_view, aspect, znear, zfar);
 
-  // load_cube_mesh_data();
-  load_obj_file_data();
+  load_texture();
+
+  load_cube_mesh_data();
+  // load_obj_file_data();
 }
 
 void process_input() {
@@ -83,6 +88,12 @@ void process_input() {
     }
     if (event.key.keysym.sym == SDLK_4) {
       render_method = RENDER_FILL_TRIANGLE_WIRE;
+    }
+    if (event.key.keysym.sym == SDLK_5) {
+      render_method = RENDER_TEXTURED;
+    }
+    if (event.key.keysym.sym == SDLK_6) {
+      render_method = RENDER_TEXTURED_WIRE;
     }
     if (event.key.keysym.sym == SDLK_c) {
       cull_method = CULL_BACKFACE;
@@ -196,7 +207,12 @@ void update() {
         .avg_depth = avg_depth,
         .points = {{projected_points[0].x, projected_points[0].y},
                    {projected_points[1].x, projected_points[1].y},
-                   {projected_points[2].x, projected_points[2].y}}};
+                   {projected_points[2].x, projected_points[2].y}},
+        .texcoords = {
+            {mesh_face.a_uv.u, mesh_face.a_uv.v},
+            {mesh_face.b_uv.u, mesh_face.b_uv.v},
+            {mesh_face.c_uv.u, mesh_face.c_uv.v},
+        }};
 
     // FIXME: dynamically allocating memory inside the game loop isn't great;
     // fix later.
@@ -239,11 +255,13 @@ void render() {
 
     if (render_method == RENDER_FILL_TRIANGLE ||
         render_method == RENDER_FILL_TRIANGLE_WIRE) {
-
       draw_filled_triangle(tri, tri.color);
     }
+    if (render_method == RENDER_TEXTURED || render_method == RENDER_TEXTURED_WIRE) {
+      draw_textured_triangle(tri, mesh_texture);
+    }
     if (render_method == RENDER_FILL_TRIANGLE_WIRE || render_method == RENDER_WIRE ||
-        render_method == RENDER_WIRE_VERTEX) {
+        render_method == RENDER_WIRE_VERTEX || render_method == RENDER_TEXTURED_WIRE) {
       draw_wireframe_triangle(tri, 0xFF444444);
     }
     if (render_method == RENDER_WIRE_VERTEX) {
