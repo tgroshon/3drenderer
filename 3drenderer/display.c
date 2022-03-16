@@ -3,6 +3,7 @@
 #include "display.h"
 #include "triangle.h"
 #include "swap.h"
+#include "light.h"
 
 // defined the externs declared in display.h
 SDL_Window *window = NULL;
@@ -171,6 +172,8 @@ void draw_wireframe_triangle(triangle_t tri, uint32_t color) {
 
 void draw_filled_triangle(triangle_t raw_triangle, uint32_t color) {
   triangle_t tri = sort_tri_points_top_down(raw_triangle);
+  uint32_t light_adjusted_color =
+      light_apply_intensity(color, tri.light_intensity_factor);
 
   int x0 = tri.points[0].x;
   int y0 = tri.points[0].y;
@@ -207,7 +210,7 @@ void draw_filled_triangle(triangle_t raw_triangle, uint32_t color) {
       }
 
       for (int x = x_start; x < x_end; x++) {
-        draw_pixel(x, y, color); 
+        draw_pixel(x, y, light_adjusted_color); 
       }
     }
   }
@@ -239,7 +242,7 @@ void draw_filled_triangle(triangle_t raw_triangle, uint32_t color) {
       }
 
       for (int x = x_start; x < x_end; x++) {
-        draw_pixel(x, y, color); 
+        draw_pixel(x, y, light_adjusted_color); 
       }
     }
   }
@@ -290,7 +293,8 @@ void draw_textured_triangle(triangle_t raw_triangle, uint32_t *texture) {
 
       for (int x = x_start; x < x_end; x++) {
         // FIXME: replace placeholder color with texel lookup
-        draw_pixel(x, y, 0xFFFF00FF); 
+        uint32_t color = light_apply_intensity(0xFFFF00FF, tri.light_intensity_factor);
+        draw_pixel(x, y, color); 
       }
     }
   }
@@ -323,7 +327,8 @@ void draw_textured_triangle(triangle_t raw_triangle, uint32_t *texture) {
 
       for (int x = x_start; x < x_end; x++) {
         // FIXME: replace placeholder color with texel lookup
-        draw_pixel(x, y, 0xFFFF00FF); 
+        uint32_t color = light_apply_intensity(0xFFFF00FF, tri.light_intensity_factor);
+        draw_pixel(x, y, color); 
       }
     }
   }

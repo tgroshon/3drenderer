@@ -203,7 +203,8 @@ void update() {
     float light_intensity_factor = vec3_dot(normal, global_light.direction) * -1;
 
     triangle_t projected_triangle = {
-        .color = light_apply_intensity(mesh_face.color, light_intensity_factor),
+        .light_intensity_factor = light_intensity_factor,
+        .color = mesh_face.color,
         .avg_depth = avg_depth,
         .points = {{projected_points[0].x, projected_points[0].y},
                    {projected_points[1].x, projected_points[1].y},

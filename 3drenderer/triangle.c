@@ -9,6 +9,7 @@ triangle_t create_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint3
   triangle_t tri;
   tri.color = color;
   tri.avg_depth = avg_depth;
+  tri.light_intensity_factor = 1.0;
 
   vec2_t point_a = {.x = x0, .y = y0};
   vec2_t point_b = {.x = x1, .y = y1};
@@ -78,6 +79,9 @@ triangle_t sort_tri_points_top_down(triangle_t tri) {
   tri_result.texcoords[0] = texcoord0;
   tri_result.texcoords[1] = texcoord1;
   tri_result.texcoords[2] = texcoord2;
+  tri_result.avg_depth = tri.avg_depth;
+  tri_result.color = tri.color;
+  tri_result.light_intensity_factor = tri.light_intensity_factor;
 
   return tri_result;
 }

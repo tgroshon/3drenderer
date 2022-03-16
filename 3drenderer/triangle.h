@@ -8,6 +8,7 @@ typedef struct {
   vec2_t points[3];
   tex2_t texcoords[3];
   uint32_t color;
+  float light_intensity_factor;
   float avg_depth;
 } triangle_t;
 
