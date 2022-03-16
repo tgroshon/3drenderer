@@ -1,6 +1,8 @@
+#include <stdio.h>
+
 #include "display.h"
 #include "triangle.h"
-#include <stdio.h>
+#include "swap.h"
 
 // defined the externs declared in display.h
 SDL_Window *window = NULL;
@@ -167,142 +169,162 @@ void draw_wireframe_triangle(triangle_t tri, uint32_t color) {
   draw_line(x2, y2, x0, y0, color);
 }
 
-void fill_flat_bottom_triangle(int x0, int y0, int x1, int y1, int x2, int y2,
-                               uint32_t color) {
-  float inv_slope1 = (float)(x1 - x0) / (y1 - y0);
-  float inv_slope2 = (float)(x2 - x0) / (y2 - y0);
-
-  float x_start = x0;
-  float x_end = x0;
-
-  for (int y = y0; y <= y2; y++) {
-    draw_line(x_start, y, x_end, y, color);
-    x_start += inv_slope1;
-    x_end += inv_slope2;
-  }
-}
-
-void fill_flat_top_triangle(int x0, int y0, int x1, int y1, int x2, int y2,
-                            uint32_t color) {
-  float inv_slope1 = (float)(x2 - x0) / (y2 - y0);
-  float inv_slope2 = (float)(x2 - x1) / (y2 - y1);
-
-  // start and end from the bottom vertex (x2, y2)
-  float x_start = x2;
-  float x_end = x2;
-
-  for (int y = y2; y >= y0; y--) {
-    draw_line(x_start, y, x_end, y, color);
-    x_start -= inv_slope1;
-    x_end -= inv_slope2;
-  }
-}
-
-
 void draw_filled_triangle(triangle_t raw_triangle, uint32_t color) {
   triangle_t tri = sort_tri_points_top_down(raw_triangle);
 
-  if (tri.points[1].y == tri.points[2].y) {
-    // tri is already a flat-bottom triangle
-    fill_flat_bottom_triangle(
-      tri.points[0].x, 
-      tri.points[0].y,
-      tri.points[1].x, 
-      tri.points[1].y, 
-      tri.points[2].x,
-      tri.points[2].y,
-      color
-    );
-  } else if (tri.points[0].y == tri.points[1].y) {
-    // tri is already a flat-top triangle
-    fill_flat_top_triangle(
-      tri.points[0].x, 
-      tri.points[0].y,
-      tri.points[1].x, 
-      tri.points[1].y, 
-      tri.points[2].x,
-      tri.points[2].y,
-      color
-    );
-  } else {
-    // tri must be split into two flat-surface triangles at a midpoint
-    vec2_t midpoint = find_triangle_midpoint(tri);
+  int x0 = tri.points[0].x;
+  int y0 = tri.points[0].y;
+  int x1 = tri.points[1].x;
+  int y1 = tri.points[1].y;
+  int x2 = tri.points[2].x;
+  int y2 = tri.points[2].y;
 
-    fill_flat_bottom_triangle(
-      tri.points[0].x, 
-      tri.points[0].y,
-      tri.points[1].x, 
-      tri.points[1].y, 
-      midpoint.x,
-      midpoint.y, 
-      color
-    );
+  ///////////////////////////////////////////////
+  /// Rasterize FLAT-BOTTOM TRIANGLE
+  ///////////////////////////////////////////////
 
-    fill_flat_top_triangle(
-      tri.points[1].x,
-      tri.points[1].y,
-      midpoint.x,
-      midpoint.y, 
-      tri.points[2].x, 
-      tri.points[2].y, 
-      color
-    );
+  // Slope of left and right triangle sides from top to bottom (i.e. inverse slope)
+  float inv_slope_1 = 0;
+  float inv_slope_2 = 0;
+
+  if (y1 - y0 != 0) {
+    inv_slope_1 = (float)(x1 - x0) /
+                  abs(y1 - y0);
   }
-  // clang-format on
+  if (y2 - y0 != 0) {
+    inv_slope_2 = (float)(x2 - x0) /
+                  abs(y2 - y0);
+  }
+
+  if (y1 - y0 != 0) {
+    for (int y = y0; y <= y1; y++) {
+      int x_start = x1 + (y - y1) * inv_slope_1;
+      int x_end = x0 + (y - y0) * inv_slope_2;
+
+      // Occasionally end and start are on opposite sites because of rotations
+      if (x_end < x_start) {
+        int_swap(&x_end, &x_start);
+      }
+
+      for (int x = x_start; x < x_end; x++) {
+        draw_pixel(x, y, color); 
+      }
+    }
+  }
+
+  ///////////////////////////////////////////////
+  /// Rasterize FLAT-TOP TRIANGLE
+  ///////////////////////////////////////////////
+
+  inv_slope_1 = 0;
+  inv_slope_2 = 0;
+
+  if (y1 - y0 != 0) {
+    inv_slope_1 = (float)(x2 - x1) /
+                  abs(y2 - y1);
+  }
+  if (y2 - y0 != 0) {
+    inv_slope_2 = (float)(x2 - x0) /
+                  abs(y2 - y0);
+  }
+
+  if (y2 - y1 != 0) {
+    for (int y = y1; y <= y2; y++) {
+      int x_start = x1 + (y - y1) * inv_slope_1;
+      int x_end = x0 + (y - y0) * inv_slope_2;
+
+      // Occasionally end and start are on opposite sites because of rotations
+      if (x_end < x_start) {
+        int_swap(&x_end, &x_start);
+      }
+
+      for (int x = x_start; x < x_end; x++) {
+        draw_pixel(x, y, color); 
+      }
+    }
+  }
 }
 
-
-void draw_textured_triangle(triangle_t raw_triangle, uint32_t *texture){
+void draw_textured_triangle(triangle_t raw_triangle, uint32_t *texture) {
   triangle_t tri = sort_tri_points_top_down(raw_triangle);
 
-  // FIXME: select the color for each pixel based on tex coord (UV) mapping
-  uint32_t color = texture[0];
+  int x0 = tri.points[0].x;
+  int y0 = tri.points[0].y;
+  float u0 = tri.texcoords[0].u;
+  float v0 = tri.texcoords[0].v;
+  int x1 = tri.points[1].x;
+  int y1 = tri.points[1].y;
+  float u1 = tri.texcoords[1].u;
+  float v1 = tri.texcoords[1].v;
+  int x2 = tri.points[2].x;
+  int y2 = tri.points[2].y;
+  float u2 = tri.texcoords[2].u;
+  float v2 = tri.texcoords[2].v;
 
-  if (tri.points[1].y == tri.points[2].y) {
-    // tri is already a flat-bottom triangle
-    fill_flat_bottom_triangle(
-      tri.points[0].x, 
-      tri.points[0].y,
-      tri.points[1].x, 
-      tri.points[1].y, 
-      tri.points[2].x,
-      tri.points[2].y,
-      color
-    );
-  } else if (tri.points[0].y == tri.points[1].y) {
-    // tri is already a flat-top triangle
-    fill_flat_top_triangle(
-      tri.points[0].x, 
-      tri.points[0].y,
-      tri.points[1].x, 
-      tri.points[1].y, 
-      tri.points[2].x,
-      tri.points[2].y,
-      color
-    );
-  } else {
-    // tri must be split into two flat-surface triangles at a midpoint
-    vec2_t midpoint = find_triangle_midpoint(tri);
+  ///////////////////////////////////////////////
+  /// Textured Rasterize FLAT-BOTTOM TRIANGLE
+  ///////////////////////////////////////////////
 
-    fill_flat_bottom_triangle(
-      tri.points[0].x, 
-      tri.points[0].y,
-      tri.points[1].x, 
-      tri.points[1].y, 
-      midpoint.x,
-      midpoint.y, 
-      color
-    );
+  // Slope of left and right triangle sides from top to bottom (i.e. inverse slope)
+  float inv_slope_1 = 0;
+  float inv_slope_2 = 0;
 
-    fill_flat_top_triangle(
-      tri.points[1].x,
-      tri.points[1].y,
-      midpoint.x,
-      midpoint.y, 
-      tri.points[2].x, 
-      tri.points[2].y, 
-      color
-    );
+  if (y1 - y0 != 0) {
+    inv_slope_1 = (float)(x1 - x0) /
+                  abs(y1 - y0);
   }
-  // clang-format on
+  if (y2 - y0 != 0) {
+    inv_slope_2 = (float)(x2 - x0) /
+                  abs(y2 - y0);
+  }
+
+  if (y1 - y0 != 0) {
+    for (int y = y0; y <= y1; y++) {
+      int x_start = x1 + (y - y1) * inv_slope_1;
+      int x_end = x0 + (y - y0) * inv_slope_2;
+
+      // Occasionally end and start are on opposite sites because of rotations
+      if (x_end < x_start) {
+        int_swap(&x_end, &x_start);
+      }
+
+      for (int x = x_start; x < x_end; x++) {
+        // FIXME: replace placeholder color with texel lookup
+        draw_pixel(x, y, 0xFFFF00FF); 
+      }
+    }
+  }
+
+  ///////////////////////////////////////////////
+  /// Textured Rasterize FLAT-TOP TRIANGLE
+  ///////////////////////////////////////////////
+
+  inv_slope_1 = 0;
+  inv_slope_2 = 0;
+
+  if (y1 - y0 != 0) {
+    inv_slope_1 = (float)(x2 - x1) /
+                  abs(y2 - y1);
+  }
+  if (y2 - y0 != 0) {
+    inv_slope_2 = (float)(x2 - x0) /
+                  abs(y2 - y0);
+  }
+
+  if (y2 - y1 != 0) {
+    for (int y = y1; y <= y2; y++) {
+      int x_start = x1 + (y - y1) * inv_slope_1;
+      int x_end = x0 + (y - y0) * inv_slope_2;
+
+      // Occasionally end and start are on opposite sites because of rotations
+      if (x_end < x_start) {
+        int_swap(&x_end, &x_start);
+      }
+
+      for (int x = x_start; x < x_end; x++) {
+        // FIXME: replace placeholder color with texel lookup
+        draw_pixel(x, y, 0xFFFF00FF); 
+      }
+    }
+  }
 };

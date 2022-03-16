@@ -1,6 +1,8 @@
+#include <stdint.h>
+
 #include "triangle.h"
 #include "vector.h"
-#include <stdint.h>
+#include "swap.h"
 
 triangle_t create_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint32_t color,
                            float avg_depth) {
@@ -19,17 +21,6 @@ triangle_t create_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint3
   return tri;
 }
 
-void tri_int_swap(int *a, int *b) {
-  int tmp = *a;
-  *a = *b;
-  *b = tmp;
-}
-void tri_float_swap(float *a, flaot *b) {
-  float tmp = *a;
-  *a = *b;
-  *b = tmp;
-}
-
 triangle_t sort_tri_points_top_down(triangle_t tri) {
   int x0 = tri.points[0].x;
   int y0 = tri.points[0].y;
@@ -46,22 +37,22 @@ triangle_t sort_tri_points_top_down(triangle_t tri) {
 
   // Step 1: sort points into flat-top+flat-bottom order: xy0 (top), xy1 (middle), xy2
   if (y0 > y1) {
-    tri_int_swap(&y0, &y1);
-    tri_int_swap(&x0, &x1);
-    tri_float_swap(&u0, &u1);
-    tri_float_swap(&v0, &v1);
+    int_swap(&y0, &y1);
+    int_swap(&x0, &x1);
+    float_swap(&u0, &u1);
+    float_swap(&v0, &v1);
   }
   if (y1 > y2) {
-    tri_int_swap(&y1, &y2);
-    tri_int_swap(&x1, &x2);
-    tri_float_swap(&u1, &u2);
-    tri_float_swap(&v1, &v2);
+    int_swap(&y1, &y2);
+    int_swap(&x1, &x2);
+    float_swap(&u1, &u2);
+    float_swap(&v1, &v2);
   }
   if (y0 > y1) {
-    tri_int_swap(&y0, &y1);
-    tri_int_swap(&x0, &x1);
-    tri_float_swap(&u0, &u1);
-    tri_float_swap(&v0, &v1);
+    int_swap(&y0, &y1);
+    int_swap(&x0, &x1);
+    float_swap(&u0, &u1);
+    float_swap(&v0, &v1);
   }
   triangle_t tri_result;
 
