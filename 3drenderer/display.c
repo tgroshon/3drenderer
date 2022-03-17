@@ -248,7 +248,41 @@ void draw_filled_triangle(triangle_t raw_triangle, uint32_t color) {
   }
 }
 
-void draw_textured_triangle(triangle_t raw_triangle, uint32_t *texture) {
+void draw_texel(int x, int y, triangle_t* tri, uint32_t *texture_buffer, int tex_height, int tex_width) {
+  // NOTE: triangle points and texcoords must already be sorted in top-down order
+  vec2_t point_a = tri->points[0];
+  vec2_t point_b = tri->points[1];
+  vec2_t point_c = tri->points[2];
+  vec2_t point_p = {x, y};
+
+  float u0 = tri->texcoords[0].u;
+  float v0 = tri->texcoords[0].v;
+  float u1 = tri->texcoords[1].u;
+  float v1 = tri->texcoords[1].v;
+  float u2 = tri->texcoords[2].u;
+  float v2 = tri->texcoords[2].v;
+
+  vec3_t weights = barycentric_weights(point_a, point_b, point_c, point_p);
+
+  float alpha = weights.x;
+  float beta = weights.y;
+  float gamma = weights.z;
+
+  // Apply barycentric weights to UV Coordinates to get interpolated coordinates
+  float interpolated_u = (u0 * alpha) + (u1 * beta) + (u2 * gamma);
+  float interpolated_v = (v0 * alpha) + (v1 * beta) + (v2 * gamma);
+
+  // Map normalized UV Coordinates to a position in the texture buffer
+  int tex_x = abs((int)(interpolated_u * tex_height));
+  int tex_y = abs((int)(interpolated_v * tex_width));
+
+  uint32_t lookup_pixel_color = texture_buffer[(texture_width * tex_y) + tex_x];
+  draw_pixel(x, y,
+             light_apply_intensity(lookup_pixel_color, tri->light_intensity_factor));
+}
+
+
+void draw_textured_triangle(triangle_t raw_triangle, uint32_t *texture, int tex_height, int tex_width) {
   triangle_t tri = sort_tri_points_top_down(raw_triangle);
 
   int x0 = tri.points[0].x;
@@ -292,9 +326,7 @@ void draw_textured_triangle(triangle_t raw_triangle, uint32_t *texture) {
       }
 
       for (int x = x_start; x < x_end; x++) {
-        // FIXME: replace placeholder color with texel lookup
-        uint32_t color = light_apply_intensity(0xFFFF00FF, tri.light_intensity_factor);
-        draw_pixel(x, y, color); 
+        draw_texel(x, y, &tri, mesh_texture, tex_height, tex_width);
       }
     }
   }
@@ -326,10 +358,9 @@ void draw_textured_triangle(triangle_t raw_triangle, uint32_t *texture) {
       }
 
       for (int x = x_start; x < x_end; x++) {
-        // FIXME: replace placeholder color with texel lookup
-        uint32_t color = light_apply_intensity(0xFFFF00FF, tri.light_intensity_factor);
-        draw_pixel(x, y, color); 
+        draw_texel(x, y, &tri, mesh_texture, tex_height, tex_width);
       }
     }
   }
 };
+

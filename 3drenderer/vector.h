@@ -91,8 +91,11 @@ vec3_t vec3_div(vec3_t v, float s);
  * Find cross product of two vectors
  *
  * @note The cross product between two vectors gives a perpendicular vector; i.e. normal
+ * 
  * @note Non-commutative (order matters); our system uses clock-wise vectors to denote
  * positive normal so choose the appropriate point by it's handedness.
+ * 
+ * @note Cross-product gives the area of the parallelogram made by two vectors
  */
 vec3_t vec3_cross(vec3_t a, vec3_t b);
 
@@ -133,9 +136,19 @@ vec3_t vec3_rotate_z(vec3_t v, float angle);
  */
 vec3_t vec3_normal(vec3_t a, vec3_t b, vec3_t c);
 
-    /////////////////////////
+/**
+* @brief Calculate barycentric weights used for calculating Barycentric coords
+* 
+* @note Useful for texture mapping
+*/
+vec3_t barycentric_weights(vec2_t a, vec2_t b, vec2_t c, vec2_t p);
+
+/////////////////////////
 /// Vector 4 Functions
 /////////////////////////
 
 vec4_t vec4_from_vec3(vec3_t v);
 vec3_t vec3_from_vec4(vec4_t v);
+
+
+

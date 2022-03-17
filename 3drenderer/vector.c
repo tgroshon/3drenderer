@@ -127,3 +127,33 @@ vec3_t vec3_from_vec4(vec4_t v) {
   vec3_t res = {.x = v.x, .y = v.y, .z = v.z};
   return res;
 }
+
+
+vec3_t barycentric_weights(vec2_t a, vec2_t b, vec2_t c, vec2_t p) {
+  // Find the vectors between the vertices (changing frame of reference)
+  vec2_t ab = vec2_sub(b, a);
+  vec2_t bc = vec2_sub(c, b);
+  vec2_t ac = vec2_sub(c, a);
+  vec2_t ap = vec2_sub(p, a);
+  vec2_t bp = vec2_sub(p, b);
+
+  // NOTE: The area of the triangles made by 3 verts are 1/2 the area of the parallelograms made by two verts.
+  // The 1/2 factors out of the numerator and denominator so we can just divide the parallelogram
+  // areas and have the same answer as dividing the triangle areas.
+
+
+  // Calculate the area of the full triangle ABC using cross product (area of parallelogram)
+  float area_pgram_abc = (ab.x * ac.y - ab.y * ac.x);
+
+  // Weight alpha is the area of parallelogram BCP divide by area of the full triangle ABC
+  float alpha = (bc.x * bp.y - bp.x * bc.y) / area_pgram_abc;
+
+  // Weight beta is the area of parallelogram ACP divide by the area of the full triangle
+  float beta = (ap.x * ac.y - ac.x * ap.y) / area_pgram_abc;
+
+  // Barycentric coordinates always add up to one, so we can derive gamma once we have alpha and beta
+  float gamma = 1 - alpha - beta;
+
+  vec3_t weights = {alpha, beta, gamma};
+  return weights;
+}
