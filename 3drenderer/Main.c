@@ -113,6 +113,10 @@ void update() {
   // re-initialize array of triangles
   triangles_to_render = NULL;
 
+
+  mesh.rotation.x += 0.01;
+  mesh.rotation.y += 0.01;
+
   // mesh.rotation.x = -0.5;
   // mesh.rotation.y = 0.5;
   // mesh.rotation.z += 0.01;
@@ -256,14 +260,14 @@ void render() {
 
     if (render_method == RENDER_FILL_TRIANGLE ||
         render_method == RENDER_FILL_TRIANGLE_WIRE) {
-      draw_filled_triangle(tri, tri.color);
+      draw_filled_triangle(&tri, tri.color);
     }
     if (render_method == RENDER_TEXTURED || render_method == RENDER_TEXTURED_WIRE) {
-      draw_textured_triangle(tri, mesh_texture, texture_height, texture_width);
+      draw_textured_triangle(&tri, mesh_texture, texture_height, texture_width);
     }
     if (render_method == RENDER_FILL_TRIANGLE_WIRE || render_method == RENDER_WIRE ||
         render_method == RENDER_WIRE_VERTEX || render_method == RENDER_TEXTURED_WIRE) {
-      draw_wireframe_triangle(tri, 0xFFDEDEDE);
+      draw_wireframe_triangle(&tri, 0xFFDEDEDE);
     }
     if (render_method == RENDER_WIRE_VERTEX) {
       draw_rect(tri.points[0].x - 3, tri.points[0].y - 3, 6, 6, 0xFFFF0000);

@@ -157,20 +157,20 @@ void draw_line(int x0, int y0, int x1, int y1, uint32_t color) {
   }
 }
 
-void draw_wireframe_triangle(triangle_t tri, uint32_t color) {
-  int x0 = tri.points[0].x;
-  int y0 = tri.points[0].y;
-  int x1 = tri.points[1].x;
-  int y1 = tri.points[1].y;
-  int x2 = tri.points[2].x;
-  int y2 = tri.points[2].y;
+void draw_wireframe_triangle(triangle_t *tri, uint32_t color) {
+  int x0 = tri->points[0].x;
+  int y0 = tri->points[0].y;
+  int x1 = tri->points[1].x;
+  int y1 = tri->points[1].y;
+  int x2 = tri->points[2].x;
+  int y2 = tri->points[2].y;
 
   draw_line(x0, y0, x1, y1, color);
   draw_line(x1, y1, x2, y2, color);
   draw_line(x2, y2, x0, y0, color);
 }
 
-void draw_filled_triangle(triangle_t raw_triangle, uint32_t color) {
+void draw_filled_triangle(triangle_t *raw_triangle, uint32_t color) {
   triangle_t tri = sort_tri_points_top_down(raw_triangle);
   uint32_t light_adjusted_color =
       light_apply_intensity(color, tri.light_intensity_factor);
@@ -282,7 +282,7 @@ void draw_texel(int x, int y, triangle_t* tri, uint32_t *texture_buffer, int tex
 }
 
 
-void draw_textured_triangle(triangle_t raw_triangle, uint32_t *texture, int tex_height, int tex_width) {
+void draw_textured_triangle(triangle_t *raw_triangle, uint32_t *texture, int tex_height, int tex_width) {
   triangle_t tri = sort_tri_points_top_down(raw_triangle);
 
   int x0 = tri.points[0].x;

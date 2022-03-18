@@ -31,9 +31,9 @@ void draw_rect(int x, int y, int width, int height, uint32_t color);
 void draw_line(int x0, int y0, int x1, int y1, uint32_t color);
 
 // void draw_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint32_t color);
-void draw_wireframe_triangle(triangle_t triangle, uint32_t color);
-void draw_filled_triangle(triangle_t triangle, uint32_t color);
-void draw_textured_triangle(triangle_t raw_triangle, uint32_t *texture, int tex_height,
+void draw_wireframe_triangle(triangle_t *triangle, uint32_t color);
+void draw_filled_triangle(triangle_t *triangle, uint32_t color);
+void draw_textured_triangle(triangle_t *triangle, uint32_t *texture, int tex_height,
                             int tex_width);
 
 /**

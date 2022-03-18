@@ -22,19 +22,19 @@ triangle_t create_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint3
   return tri;
 }
 
-triangle_t sort_tri_points_top_down(triangle_t tri) {
-  int x0 = tri.points[0].x;
-  int y0 = tri.points[0].y;
-  float u0 = tri.texcoords[0].u;
-  float v0 = tri.texcoords[0].v;
-  int x1 = tri.points[1].x;
-  int y1 = tri.points[1].y;
-  float u1 = tri.texcoords[1].u;
-  float v1 = tri.texcoords[1].v;
-  int x2 = tri.points[2].x;
-  int y2 = tri.points[2].y;
-  float u2 = tri.texcoords[2].u;
-  float v2 = tri.texcoords[2].v;
+triangle_t sort_tri_points_top_down(triangle_t *tri) {
+  int x0 = tri->points[0].x;
+  int y0 = tri->points[0].y;
+  float u0 = tri->texcoords[0].u;
+  float v0 = tri->texcoords[0].v;
+  int x1 = tri->points[1].x;
+  int y1 = tri->points[1].y;
+  float u1 = tri->texcoords[1].u;
+  float v1 = tri->texcoords[1].v;
+  int x2 = tri->points[2].x;
+  int y2 = tri->points[2].y;
+  float u2 = tri->texcoords[2].u;
+  float v2 = tri->texcoords[2].v;
 
   // Step 1: sort points into flat-top+flat-bottom order: xy0 (top), xy1 (middle), xy2
   if (y0 > y1) {
@@ -79,23 +79,23 @@ triangle_t sort_tri_points_top_down(triangle_t tri) {
   tri_result.texcoords[0] = texcoord0;
   tri_result.texcoords[1] = texcoord1;
   tri_result.texcoords[2] = texcoord2;
-  tri_result.avg_depth = tri.avg_depth;
-  tri_result.color = tri.color;
-  tri_result.light_intensity_factor = tri.light_intensity_factor;
+  tri_result.avg_depth = tri->avg_depth;
+  tri_result.color = tri->color;
+  tri_result.light_intensity_factor = tri->light_intensity_factor;
 
   return tri_result;
 }
 
-vec2_t find_triangle_midpoint(triangle_t tri) {
+vec2_t find_triangle_midpoint(triangle_t *tri) {
   // NOTE: triangle must have points already sorted down into flat-top+flat-bottom order:
   // xy0 (top), xy1 (middle), xy2 (bottom)
 
-  int x0 = tri.points[0].x;
-  int y0 = tri.points[0].y;
-  int x1 = tri.points[1].x;
-  int y1 = tri.points[1].y;
-  int x2 = tri.points[2].x;
-  int y2 = tri.points[2].y;
+  int x0 = tri->points[0].x;
+  int y0 = tri->points[0].y;
+  int x1 = tri->points[1].x;
+  int y1 = tri->points[1].y;
+  int x2 = tri->points[2].x;
+  int y2 = tri->points[2].y;
 
   // Step 2: Y component of xy1 is the midpoint.y
   int my = y1;
