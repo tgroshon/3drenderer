@@ -255,22 +255,39 @@ void draw_texel(int x, int y, triangle_t* tri, uint32_t *texture_buffer, int tex
   vec2_t point_c = vec2_from_vec4(tri->points[2]);
   vec2_t point_p = {x, y};
 
-  float u0 = tri->texcoords[0].u;
-  float v0 = tri->texcoords[0].v;
-  float u1 = tri->texcoords[1].u;
-  float v1 = tri->texcoords[1].v;
-  float u2 = tri->texcoords[2].u;
-  float v2 = tri->texcoords[2].v;
-
   vec3_t weights = barycentric_weights(point_a, point_b, point_c, point_p);
 
   float alpha = weights.x;
   float beta = weights.y;
   float gamma = weights.z;
 
+  float u0 = tri->texcoords[0].u;
+  float v0 = tri->texcoords[0].v;
+  float w0 = tri->points[0].w;
+
+  float u1 = tri->texcoords[1].u;
+  float v1 = tri->texcoords[1].v;
+  float w1 = tri->points[1].w;
+
+  float u2 = tri->texcoords[2].u;
+  float v2 = tri->texcoords[2].v;
+  float w2 = tri->points[2].w;
+
   // Apply barycentric weights to UV Coordinates to get interpolated coordinates
-  float interpolated_u = (u0 * alpha) + (u1 * beta) + (u2 * gamma);
-  float interpolated_v = (v0 * alpha) + (v1 * beta) + (v2 * gamma);
+  float interpolated_u;
+  float interpolated_v;
+  float interpolated_reciprocal_w; // W (i.e. original Z) is non-linear over the triangle face, but 1/w is linear
+
+  // Perform interpolation calculation of U/w and V/w and factor of 1/w to make perspective correct
+  interpolated_u = (u0/w0 * alpha) + (u1/w1 * beta) + (u2/w2 * gamma);
+  interpolated_v = (v0/w0 * alpha) + (v1/w1 * beta) + (v2/w2 * gamma);
+
+  // Interpolate the value of 1/w for current pixel
+  interpolated_reciprocal_w = (1/w0 * alpha) + (1/w1 * beta) + (1/w2 * gamma);
+
+  // Divide back by interpolated 1/w 
+  interpolated_u /= interpolated_reciprocal_w;
+  interpolated_v /= interpolated_reciprocal_w;
 
   // Map normalized UV Coordinates to a position in the texture buffer
   int tex_x = abs((int)(interpolated_u * tex_height));
