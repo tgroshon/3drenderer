@@ -9,8 +9,8 @@
 #include "light.h"
 #include "matrix.h"
 #include "mesh.h"
-#include "vector.h"
 #include "triangle.h"
+#include "vector.h"
 
 enum cull_method { CULL_NONE, CULL_BACKFACE } cull_method;
 enum render_method {
@@ -113,7 +113,6 @@ void update() {
   // re-initialize array of triangles
   triangles_to_render = NULL;
 
-
   mesh.rotation.x += 0.01;
   mesh.rotation.y += 0.01;
 
@@ -210,9 +209,12 @@ void update() {
         .light_intensity_factor = light_intensity_factor,
         .color = mesh_face.color,
         .avg_depth = avg_depth,
-        .points = {{projected_points[0].x, projected_points[0].y},
-                   {projected_points[1].x, projected_points[1].y},
-                   {projected_points[2].x, projected_points[2].y}},
+        .points = {{projected_points[0].x, projected_points[0].y, projected_points[0].z,
+                    projected_points[0].w},
+                   {projected_points[1].x, projected_points[1].y, projected_points[1].z,
+                    projected_points[1].w},
+                   {projected_points[2].x, projected_points[2].y, projected_points[2].z,
+                    projected_points[2].w}},
         .texcoords = {
             {mesh_face.a_uv.u, mesh_face.a_uv.v},
             {mesh_face.b_uv.u, mesh_face.b_uv.v},

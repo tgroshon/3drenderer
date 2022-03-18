@@ -129,6 +129,11 @@ vec3_t vec3_from_vec4(vec4_t v) {
 }
 
 
+vec2_t vec2_from_vec4(vec4_t v) {
+  vec2_t res = {.x = v.x, .y = v.y};
+  return res;
+}
+
 vec3_t barycentric_weights(vec2_t a, vec2_t b, vec2_t c, vec2_t p) {
   // Find the vectors between the vertices (changing frame of reference)
   vec2_t ab = vec2_sub(b, a);

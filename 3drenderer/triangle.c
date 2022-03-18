@@ -4,35 +4,23 @@
 #include "vector.h"
 #include "swap.h"
 
-triangle_t create_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint32_t color,
-                           float avg_depth) {
-  triangle_t tri;
-  tri.color = color;
-  tri.avg_depth = avg_depth;
-  tri.light_intensity_factor = 1.0;
-
-  vec2_t point_a = {.x = x0, .y = y0};
-  vec2_t point_b = {.x = x1, .y = y1};
-  vec2_t point_c = {.x = x2, .y = y2};
-
-  tri.points[0] = point_a;
-  tri.points[1] = point_b;
-  tri.points[2] = point_c;
-
-  return tri;
-}
-
 triangle_t sort_tri_points_top_down(triangle_t *tri) {
   int x0 = tri->points[0].x;
   int y0 = tri->points[0].y;
+  int z0 = tri->points[0].z;
+  int w0 = tri->points[0].w;
   float u0 = tri->texcoords[0].u;
   float v0 = tri->texcoords[0].v;
   int x1 = tri->points[1].x;
   int y1 = tri->points[1].y;
+  int z1 = tri->points[1].z;
+  int w1 = tri->points[1].w;
   float u1 = tri->texcoords[1].u;
   float v1 = tri->texcoords[1].v;
   int x2 = tri->points[2].x;
   int y2 = tri->points[2].y;
+  int z2 = tri->points[2].z;
+  int w2 = tri->points[2].w;
   float u2 = tri->texcoords[2].u;
   float v2 = tri->texcoords[2].v;
 
@@ -40,26 +28,32 @@ triangle_t sort_tri_points_top_down(triangle_t *tri) {
   if (y0 > y1) {
     int_swap(&y0, &y1);
     int_swap(&x0, &x1);
+    float_swap(&z0, &z1);
+    float_swap(&w0, &w1);
     float_swap(&u0, &u1);
     float_swap(&v0, &v1);
   }
   if (y1 > y2) {
     int_swap(&y1, &y2);
     int_swap(&x1, &x2);
+    float_swap(&z1, &z2);
+    float_swap(&w1, &w2);
     float_swap(&u1, &u2);
     float_swap(&v1, &v2);
   }
   if (y0 > y1) {
     int_swap(&y0, &y1);
     int_swap(&x0, &x1);
+    float_swap(&z0, &z1);
+    float_swap(&w0, &w1);
     float_swap(&u0, &u1);
     float_swap(&v0, &v1);
   }
   triangle_t tri_result;
 
-  vec2_t point0 = {.x = x0, .y = y0};
-  vec2_t point1 = {.x = x1, .y = y1};
-  vec2_t point2 = {.x = x2, .y = y2};
+  vec4_t point0 = {.x = x0, .y = y0, .z = z0, .w = w0};
+  vec4_t point1 = {.x = x1, .y = y1, .z = z1, .w = w1};
+  vec4_t point2 = {.x = x2, .y = y2, .z = z2, .w = w2};
   tex2_t texcoord0 = {
       .u = u0,
       .v = v0,
@@ -84,27 +78,4 @@ triangle_t sort_tri_points_top_down(triangle_t *tri) {
   tri_result.light_intensity_factor = tri->light_intensity_factor;
 
   return tri_result;
-}
-
-vec2_t find_triangle_midpoint(triangle_t *tri) {
-  // NOTE: triangle must have points already sorted down into flat-top+flat-bottom order:
-  // xy0 (top), xy1 (middle), xy2 (bottom)
-
-  int x0 = tri->points[0].x;
-  int y0 = tri->points[0].y;
-  int x1 = tri->points[1].x;
-  int y1 = tri->points[1].y;
-  int x2 = tri->points[2].x;
-  int y2 = tri->points[2].y;
-
-  // Step 2: Y component of xy1 is the midpoint.y
-  int my = y1;
-
-  // Step 3: Find midpoint x using triangle similarity, "two triangles of the same shape
-  // but different size always have the same ratio between sides as eachother"
-  int mx = ((float)((x2 - x0) * (y1 - y0)) / (float)(y2 - y0)) + x0;
-
-  vec2_t midpoint = {.x = mx, .y = my};
-
-  return midpoint;
 }

@@ -136,19 +136,21 @@ vec3_t vec3_rotate_z(vec3_t v, float angle);
  */
 vec3_t vec3_normal(vec3_t a, vec3_t b, vec3_t c);
 
-/**
-* @brief Calculate barycentric weights used for calculating Barycentric coords
-* 
-* @note Useful for texture mapping
-*/
-vec3_t barycentric_weights(vec2_t a, vec2_t b, vec2_t c, vec2_t p);
-
 /////////////////////////
 /// Vector 4 Functions
 /////////////////////////
 
 vec4_t vec4_from_vec3(vec3_t v);
 vec3_t vec3_from_vec4(vec4_t v);
+vec2_t vec2_from_vec4(vec4_t v);
 
+/////////////////////////
+/// Misc Vector Functions
+/////////////////////////
 
-
+/**
+* @brief Calculate barycentric weights used for calculating Barycentric coords
+* 
+* @note Useful for texture mapping
+*/
+vec3_t barycentric_weights(vec2_t a, vec2_t b, vec2_t c, vec2_t p);

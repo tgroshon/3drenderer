@@ -250,9 +250,9 @@ void draw_filled_triangle(triangle_t *raw_triangle, uint32_t color) {
 
 void draw_texel(int x, int y, triangle_t* tri, uint32_t *texture_buffer, int tex_height, int tex_width) {
   // NOTE: triangle points and texcoords must already be sorted in top-down order
-  vec2_t point_a = tri->points[0];
-  vec2_t point_b = tri->points[1];
-  vec2_t point_c = tri->points[2];
+  vec2_t point_a = vec2_from_vec4(tri->points[0]);
+  vec2_t point_b = vec2_from_vec4(tri->points[1]);
+  vec2_t point_c = vec2_from_vec4(tri->points[2]);
   vec2_t point_p = {x, y};
 
   float u0 = tri->texcoords[0].u;
