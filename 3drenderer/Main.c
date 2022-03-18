@@ -113,11 +113,8 @@ void update() {
   // re-initialize array of triangles
   triangles_to_render = NULL;
 
-  mesh.rotation.x += 0.01;
+  // mesh.rotation.x += 0.01;
   mesh.rotation.y += 0.01;
-
-  // mesh.rotation.x = -0.5;
-  // mesh.rotation.y = 0.5;
   // mesh.rotation.z += 0.01;
 
   // translate the mesh away from the camera Z by a static offset
@@ -209,12 +206,7 @@ void update() {
         .light_intensity_factor = light_intensity_factor,
         .color = mesh_face.color,
         .avg_depth = avg_depth,
-        .points = {{projected_points[0].x, projected_points[0].y, projected_points[0].z,
-                    projected_points[0].w},
-                   {projected_points[1].x, projected_points[1].y, projected_points[1].z,
-                    projected_points[1].w},
-                   {projected_points[2].x, projected_points[2].y, projected_points[2].z,
-                    projected_points[2].w}},
+        .points = {projected_points[0], projected_points[1], projected_points[2]},
         .texcoords = {
             {mesh_face.a_uv.u, mesh_face.a_uv.v},
             {mesh_face.b_uv.u, mesh_face.b_uv.v},

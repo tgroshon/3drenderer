@@ -248,19 +248,14 @@ void draw_filled_triangle(triangle_t *raw_triangle, uint32_t color) {
   }
 }
 
+/**
+* Drawing a texture pixel (texel)
+* 
+* @note triangle points and texcoords must already be sorted in top-down order
+* 
+* @note very reckless with performance with all the division operations per-pixel
+*/
 void draw_texel(int x, int y, triangle_t* tri, uint32_t *texture_buffer, int tex_height, int tex_width) {
-  // NOTE: triangle points and texcoords must already be sorted in top-down order
-  vec2_t point_a = vec2_from_vec4(tri->points[0]);
-  vec2_t point_b = vec2_from_vec4(tri->points[1]);
-  vec2_t point_c = vec2_from_vec4(tri->points[2]);
-  vec2_t point_p = {x, y};
-
-  vec3_t weights = barycentric_weights(point_a, point_b, point_c, point_p);
-
-  float alpha = weights.x;
-  float beta = weights.y;
-  float gamma = weights.z;
-
   float u0 = tri->texcoords[0].u;
   float v0 = tri->texcoords[0].v;
   float w0 = tri->points[0].w;
@@ -273,17 +268,28 @@ void draw_texel(int x, int y, triangle_t* tri, uint32_t *texture_buffer, int tex
   float v2 = tri->texcoords[2].v;
   float w2 = tri->points[2].w;
 
+  vec2_t point_a = vec2_from_vec4(tri->points[0]);
+  vec2_t point_b = vec2_from_vec4(tri->points[1]);
+  vec2_t point_c = vec2_from_vec4(tri->points[2]);
+  vec2_t point_p = {x, y};
+
+  vec3_t weights = barycentric_weights(point_a, point_b, point_c, point_p);
+
+  float alpha = weights.x;
+  float beta = weights.y;
+  float gamma = weights.z;
+
   // Apply barycentric weights to UV Coordinates to get interpolated coordinates
   float interpolated_u;
   float interpolated_v;
   float interpolated_reciprocal_w; // W (i.e. original Z) is non-linear over the triangle face, but 1/w is linear
 
   // Perform interpolation calculation of U/w and V/w and factor of 1/w to make perspective correct
-  interpolated_u = (u0/w0 * alpha) + (u1/w1 * beta) + (u2/w2 * gamma);
-  interpolated_v = (v0/w0 * alpha) + (v1/w1 * beta) + (v2/w2 * gamma);
+  interpolated_u = (u0/w0) * alpha + (u1/w1) * beta + (u2/w2) * gamma;
+  interpolated_v = (v0/w0) * alpha + (v1/w1) * beta + (v2/w2) * gamma;
 
   // Interpolate the value of 1/w for current pixel
-  interpolated_reciprocal_w = (1/w0 * alpha) + (1/w1 * beta) + (1/w2 * gamma);
+  interpolated_reciprocal_w = (1/w0) * alpha + (1/w1) * beta + (1/w2) * gamma;
 
   // Divide back by interpolated 1/w 
   interpolated_u /= interpolated_reciprocal_w;
@@ -304,16 +310,10 @@ void draw_textured_triangle(triangle_t *raw_triangle, uint32_t *texture, int tex
 
   int x0 = tri.points[0].x;
   int y0 = tri.points[0].y;
-  float u0 = tri.texcoords[0].u;
-  float v0 = tri.texcoords[0].v;
   int x1 = tri.points[1].x;
   int y1 = tri.points[1].y;
-  float u1 = tri.texcoords[1].u;
-  float v1 = tri.texcoords[1].v;
   int x2 = tri.points[2].x;
   int y2 = tri.points[2].y;
-  float u2 = tri.texcoords[2].u;
-  float v2 = tri.texcoords[2].v;
 
   ///////////////////////////////////////////////
   /// Textured Rasterize FLAT-BOTTOM TRIANGLE
