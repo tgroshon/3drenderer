@@ -1,43 +1,29 @@
-#pragma once
+#ifndef MESH_H
+#define MESH_H
 
-#include <stdint.h>
 #include "vector.h"
-#include "texture.h"
+#include "triangle.h"
 
-/**
- * Face represents the indexes of 3 points in a corresponding mesh point array.
- *
- * @details The ordering of which point you place in which field is significant
- * because a clockwise ordering of points determines the forward side (normal)
- * of the face; counter-clockwise denotes the back of the face.
- *
- * @note each field is base 1 instead of base 0
- */
-typedef struct {
-  // indices of vertices in the mesh
-  int a;
-  int b;
-  int c;
-  // UV coordinate mappings to the texture
-  tex2_t a_uv;
-  tex2_t b_uv;
-  tex2_t c_uv;
-  // Solid color if texture not used
-  uint32_t color;
-} face_t;
+#define N_CUBE_VERTICES 8
+#define N_CUBE_FACES (6 * 2) // 6 cube faces, 2 triangles per face
 
-/**
-* Defines a struct for dynamically sized meshes containing vertices, faces, and rotation
-*/
+extern vec3_t cube_vertices[N_CUBE_VERTICES];
+extern face_t cube_faces[N_CUBE_FACES];
+
+////////////////////////////////////////////////////////////////////////////////
+// Define a struct for dynamic size meshes, with array of vertices and faces
+////////////////////////////////////////////////////////////////////////////////
 typedef struct {
-  vec3_t *vertices;   // dynamic array
-  face_t *faces;      // dynamic array
-  vec3_t rotation;    // euler angles with x, y, z denoting axis of rotation
-  vec3_t scale;       // scale with x, y, z
-  vec3_t translation; // translation with x, y, z
+    vec3_t* vertices;   // dynamic array of vertices
+    face_t* faces;      // dynamic array of faces
+    vec3_t rotation;    // rotation with x, y, and z values
+    vec3_t scale;       // scale with x, y, and z values
+    vec3_t translation; // translation with x, y, and z values
 } mesh_t;
 
 extern mesh_t mesh;
 
-void load_cube_mesh_data();
-void load_obj_file_data();
+void load_cube_mesh_data(void);
+void load_obj_file_data(char* filename);
+
+#endif
