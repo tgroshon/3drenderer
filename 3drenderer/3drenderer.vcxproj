@@ -116,7 +116,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -132,7 +132,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -151,6 +151,7 @@
     <ClCompile Include="mesh.c" />
     <ClCompile Include="swap.c" />
     <ClCompile Include="triangle.c" />
+    <ClCompile Include="upng.c" />
     <ClCompile Include="vector.c" />
     <ClCompile Include="texture.c" />
   </ItemGroup>
@@ -162,6 +163,7 @@
     <ClInclude Include="mesh.h" />
     <ClInclude Include="swap.h" />
     <ClInclude Include="triangle.h" />
+    <ClInclude Include="upng.h" />
     <ClInclude Include="vector.h" />
     <ClInclude Include="texture.h" />
   </ItemGroup>
