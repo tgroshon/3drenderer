@@ -12,8 +12,8 @@ Using [SDL2](https://libsdl.org/) to manually create a 3D rendering pipeline.
 
 ### MacOS
 
-1. Download SDL2 MacOS DMG: https://libsdl.org/download-2.0.php
-2. Copy framework file to `/Library/Frameworks`
+1. Download SDL2 MacOS dmg: https://libsdl.org/download-2.0.php
+2. Copy `SDL2.framework` file from dmg to `/Library/Frameworks`
 3. `make build`
 
 ### Linux
