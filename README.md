@@ -21,7 +21,7 @@ Using [SDL2](https://libsdl.org/) to manually create a 3D rendering pipeline.
 Install dependencies:
 
 ```bash
-sudo apt install build-essential libsdl2-dev
+sudo apt install build-essential libsdl2-dev bear
 ```
 
 Use make:
@@ -34,4 +34,4 @@ make run
 ### Generate compile_commands.json file
 
 1. Install [bear](https://github.com/rizsotto/Bear).
-2. Run: `bear make build`
+2. Run: `bear -- make build`
