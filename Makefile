@@ -1,13 +1,17 @@
-CFLAGS := -lm -D_REENTRANT 
+CFLAGS := -lm -D_REENTRANT
 
-ifeq ($(OS),Windows_NT) # is Windows_NT on XP, 2000, 7, Vista, 10...
-	detected_OS := Windows
-else
-	detected_OS := $(shell uname)  # same as "uname -s"
-endif
+detected_OS := Linux
+# NOTE: bug in the detection keeps falling back to non-linux
+# ifeq ($(OS),Windows_NT) # is Windows_NT on XP, 2000, 7, Vista, 10...
+# 	detected_OS := Windows
+# else
+# 	detected_OS := $(shell uname)  # same as "uname -s"
+# endif
 
 ifeq ($(detected_OS),Linux)
-	CFLAGS += -lSDL2 -I/usr/include/SDL2
+	# NOTE: added -fcommon to allow lenient multiple definitions
+	# of global variables in latest gcc until I get around to fixing it
+	CFLAGS += -fcommon -lSDL2 -I/usr/include/SDL2
 else
 	CFLAGS += -F/Library/Frameworks -framework SDL2
 endif
