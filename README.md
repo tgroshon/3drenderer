@@ -10,9 +10,18 @@ Using [SDL2](https://libsdl.org/) to manually create a 3D rendering pipeline.
 1. Open project solution with Visual Studio
 1. Build
 
-### MacOS
+### macOS
 
-1. Download SDL2 MacOS dmg: https://libsdl.org/download-2.0.php
+#### Using Homebrew (recommended)
+
+```bash
+brew install sdl2
+make build
+```
+
+#### Using Framework
+
+1. Download SDL2 macOS dmg: https://libsdl.org/download-2.0.php
 2. Copy `SDL2.framework` file from dmg to `/Library/Frameworks`
 3. `make build`
 
